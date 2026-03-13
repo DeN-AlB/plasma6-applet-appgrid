@@ -162,30 +162,61 @@ QString AppModel::mapCategory(const QStringList &categories) const
 
 void AppModel::loadApplications()
 {
-    const auto services = KService::allServices();
     QSet<QString> seen;
     QSet<QString> categorySet;
 
-    for (const auto &service : services) {
-        if (service->noDisplay() || service->exec().isEmpty())
-            continue;
+    // Traverse the XDG menu hierarchy via KServiceGroup.
+    // This respects .menu exclude rules and shows only apps that
+    // belong to the desktop menu, like Kicker/Kickoff do.
+    std::function<void(KServiceGroup::Ptr)> walkGroup;
+    walkGroup = [&](KServiceGroup::Ptr group) {
+        if (!group || !group->isValid())
+            return;
 
-        const QString name = service->name();
-        if (name.isEmpty() || seen.contains(name))
-            continue;
-        seen.insert(name);
+        const auto entries = group->entries(true /* sorted */,
+                                            true /* excludeNoDisplay */,
+                                            false /* allowSeparators */,
+                                            true /* sortByGenericName */);
 
-        AppEntry entry;
-        entry.name = name;
-        entry.icon = service->icon();
-        entry.desktopFile = service->entryPath();
-        entry.genericName = service->genericName();
-        entry.exec = service->exec();
-        entry.category = mapCategory(service->categories());
+        for (const auto &entry : entries) {
+            if (entry->isType(KST_KServiceGroup)) {
+                walkGroup(KServiceGroup::Ptr(static_cast<KServiceGroup *>(entry.data())));
+                continue;
+            }
 
-        categorySet.insert(entry.category);
-        m_apps.append(entry);
-    }
+            if (!entry->isType(KST_KService))
+                continue;
+
+            auto service = KService::Ptr(static_cast<KService *>(entry.data()));
+
+            if (!service->isApplication())
+                continue;
+            if (service->noDisplay() || service->exec().isEmpty())
+                continue;
+
+            const QString storageId = service->storageId();
+            if (storageId.isEmpty() || seen.contains(storageId))
+                continue;
+            seen.insert(storageId);
+
+            const QString name = service->name();
+            if (name.isEmpty())
+                continue;
+
+            AppEntry appEntry;
+            appEntry.name = name;
+            appEntry.icon = service->icon();
+            appEntry.desktopFile = service->entryPath();
+            appEntry.genericName = service->genericName();
+            appEntry.exec = service->exec();
+            appEntry.category = mapCategory(service->categories());
+
+            categorySet.insert(appEntry.category);
+            m_apps.append(appEntry);
+        }
+    };
+
+    walkGroup(KServiceGroup::root());
 
     // Sort alphabetically
     QCollator collator;
