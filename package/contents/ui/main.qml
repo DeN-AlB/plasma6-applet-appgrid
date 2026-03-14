@@ -43,6 +43,20 @@ PlasmoidItem {
         }
     }
 
+    // TODO: Test which display mode works best, may remove this setting
+    // Recreate window when display mode changes (LayerShell can't be toggled at runtime)
+    Connections {
+        target: Plasmoid.configuration
+        function onDisplayModeChanged() {
+            if (gridWindow) {
+                gridWindow.visible = false
+                gridWindow.destroy()
+                gridWindow = null
+            }
+            gridOpen = false
+        }
+    }
+
     function toggleWindow() {
         if (gridOpen) {
             closeWindow()

@@ -55,10 +55,17 @@ Window {
         return ""
     }
 
+    // -- Display mode --
+    // TODO: Both fullscreen overlay and centered popup behave the same currently.
+    //       Test which works best and decide whether to keep both or pick one.
+    readonly property bool isPopupMode: Plasmoid.configuration.displayMode === 1
+    readonly property real panelShadowMargin: Kirigami.Units.gridUnit * 2
+
     // -- Window setup --
-    width: Screen.width
-    height: Screen.height
-    x: 0; y: 0
+    width: isPopupMode ? panel.width + panelShadowMargin * 2 : Screen.width
+    height: isPopupMode ? panel.height + panelShadowMargin * 2 : Screen.height
+    x: isPopupMode ? Math.round((Screen.width - width) / 2) : 0
+    y: isPopupMode ? Math.round((Screen.height - height) / 2) : 0
     visible: false
     color: "transparent"
     flags: Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint | Qt.Tool
@@ -161,7 +168,7 @@ Window {
             else
                 appsModel.recentApps = []
         }
-        if (!windowConfigured) {
+        if (!windowConfigured && !isPopupMode) {
             Plasmoid.configureWindow(root)
             windowConfigured = true
         }
@@ -200,12 +207,21 @@ Window {
 
     // Alt+1 through Alt+9 handled via search bar key forwarding
 
+    // In popup mode, close when window loses focus
+    onActiveChanged: {
+        if (isPopupMode && !active && visible && !contextMenu.visible) {
+            if (appletInterface)
+                appletInterface.closeWindow()
+        }
+    }
+
     // -----------------------------------------------------------------------
     // Background (click to close)
     // -----------------------------------------------------------------------
 
     MouseArea {
         anchors.fill: parent
+        visible: !root.isPopupMode
         onClicked: {
             if (root.appletInterface)
                 root.appletInterface.closeWindow()

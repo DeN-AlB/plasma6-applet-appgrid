@@ -26,6 +26,7 @@ KCMUtils.SimpleKCM {
     property alias cfg_gridRows: gridRows.value
     property alias cfg_iconSize: iconSize.currentIndex
     property alias cfg_sortMode: sortMode.currentIndex
+    property alias cfg_displayMode: displayMode.currentIndex
     property alias cfg_overrideRadius: overrideRadius.checked
     property alias cfg_cornerRadius: cornerRadius.value
     property alias cfg_showScrollbars: showScrollbars.checked
@@ -139,6 +140,17 @@ KCMUtils.SimpleKCM {
                     }
                 }
             }
+        }
+
+        // --- Display mode ---
+
+        Item { Kirigami.FormData.isSection: true }
+
+        // TODO: Test which display mode works best, may remove this setting
+        QQC2.ComboBox {
+            id: displayMode
+            Kirigami.FormData.label: i18n("Display mode:")
+            model: [i18n("Fullscreen overlay"), i18n("Centered popup")]
         }
 
         // --- Grid size ---
