@@ -100,6 +100,11 @@ Right-click the AppGrid panel icon → **Configure AppGrid** → **General**:
 - **Sort order** — Alphabetical or most used
 - **Background** — Blur, opacity, and corner radius
 
+## Credits
+
+- **Jason Scurtu** — Author
+- **[@claude](https://github.com/claude)** — AI pair programming assistant
+
 ## License
 
 GPL-2.0-or-later
