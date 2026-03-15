@@ -22,7 +22,7 @@ jobs:
       is_release: ${{ steps.version.outputs.is_release }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -59,7 +59,7 @@ jobs:
             plasma-workspace
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build
         run: |
@@ -73,7 +73,7 @@ jobs:
           tar czf ../plasma6-applets-appgrid-${APP_VERSION}-1-arch-x86_64.tar.gz .
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: arch-package
           path: plasma6-applets-appgrid-*.tar.gz
@@ -98,7 +98,7 @@ jobs:
             rpm-build
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build
         run: |
@@ -109,6 +109,7 @@ jobs:
         run: |
           DESTDIR="$PWD/pkg" cmake --install build
           FEDORA_VER=$(rpm -E %fedora)
+          PKG_DIR="$PWD/pkg"
           cat > appgrid.spec <<SPEC
           Name:           plasma-applet-appgrid
           Version:        ${APP_VERSION}
@@ -122,7 +123,7 @@ jobs:
           inspired by macOS Launchpad and COSMIC.
 
           %install
-          cp -a %{_builddir}/pkg/* %{buildroot}/
+          cp -a ${PKG_DIR}/* %{buildroot}/
 
           %files
           /usr/lib64/qt6/plugins/plasma/applets/dev.xarbit.appgrid.so
@@ -130,14 +131,13 @@ jobs:
           /usr/share/metainfo/dev.xarbit.appgrid.metainfo.xml
           /usr/share/locale/*/LC_MESSAGES/dev.xarbit.appgrid.mo
           SPEC
-          rpmbuild -bb --build-in-place \
+          rpmbuild -bb \
             --define "_topdir $PWD/rpmbuild" \
-            --define "_builddir $PWD" \
             appgrid.spec
           find rpmbuild/RPMS -name '*.rpm' -exec cp {} . \;
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: fedora-package
           path: '*.rpm'
@@ -165,7 +165,7 @@ jobs:
             rpm-build
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build
         run: |
@@ -176,6 +176,7 @@ jobs:
         run: |
           DESTDIR="$PWD/pkg" cmake --install build
           TW_SNAPSHOT=$(grep -oP 'VERSION_ID="\K[^"]+' /etc/os-release)
+          PKG_DIR="$PWD/pkg"
           cat > appgrid.spec <<SPEC
           Name:           plasma6-applet-appgrid
           Version:        ${APP_VERSION}
@@ -189,7 +190,7 @@ jobs:
           inspired by macOS Launchpad and COSMIC.
 
           %install
-          cp -a %{_builddir}/pkg/* %{buildroot}/
+          cp -a ${PKG_DIR}/* %{buildroot}/
 
           %files
           /usr/lib64/qt6/plugins/plasma/applets/dev.xarbit.appgrid.so
@@ -197,14 +198,13 @@ jobs:
           /usr/share/metainfo/dev.xarbit.appgrid.metainfo.xml
           /usr/share/locale/*/LC_MESSAGES/dev.xarbit.appgrid.mo
           SPEC
-          rpmbuild -bb --build-in-place \
+          rpmbuild -bb \
             --define "_topdir $PWD/rpmbuild" \
-            --define "_builddir $PWD" \
             appgrid.spec
           find rpmbuild/RPMS -name '*.rpm' -exec cp {} . \;
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: opensuse-tumbleweed-package
           path: '*.rpm'
@@ -233,7 +233,7 @@ jobs:
             dpkg-dev
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build
         run: |
@@ -263,7 +263,7 @@ jobs:
             "plasma-applet-appgrid_${APP_VERSION}-1ubuntu${UBUNTU_VER}_${UBUNTU_CODENAME}_amd64.deb"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ubuntu-package
           path: '*.deb'
@@ -275,7 +275,7 @@ jobs:
     if: needs.version.outputs.is_release == 'true'
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: artifacts
           merge-multiple: true
