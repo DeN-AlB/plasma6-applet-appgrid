@@ -23,19 +23,14 @@ KDE Plasma ships with Kickoff and Kicker as its default application launchers. W
 
 ## Features
 
-- **Fullscreen app grid** — All installed applications in a clean, visual grid with Wayland layer-shell support
-- **Category filtering** — Filter apps by category (Development, Graphics, Internet, Multimedia, Office, System, Utilities)
-- **Search with KRunner integration** — Instant search with numbered results and Alt+1–9 shortcuts for quick launching
-- **Quick commands** — Type `?` for help: open terminal (`t:`), run shell commands (`:`), browse files (`/`, `~/`)
-- **Configurable icon size** — Small, medium, or large icons
-- **Sort by most used** — Option to sort apps by launch frequency instead of alphabetically
-- **New app detection** — Highlights recently installed applications with a badge
-- **Session management** — Sleep, restart, shut down, lock, and log out buttons
-- **Context menu** — Pin to Task Manager, Add to Desktop, Edit Application, Hide apps
-- **Background customization** — Blur, opacity, and corner radius settings
-- **Theme support** — Follows the user's Plasma theme (light/dark)
-- **29 language translations** — European language support included
-- **Show Alternatives** — Works as a drop-in replacement via Plasma's launcher alternative mechanism
+- Category filtering and KRunner search integration
+- Quick commands — terminal, shell commands, file browser (type `?` for help)
+- Sort by most used or alphabetically
+- New app detection with badge
+- Session management (sleep, restart, shut down, lock, log out)
+- Context menu with pin to Task Manager, add to Desktop, hide apps
+- Customizable grid size, icon size, background blur, opacity, and corner radius
+- Drop-in replacement via Plasma's Show Alternatives
 
 ## Dependencies
 
