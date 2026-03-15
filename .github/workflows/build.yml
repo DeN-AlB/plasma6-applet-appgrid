@@ -11,7 +11,7 @@ on:
       - '.gitignore'
       - 'dev.xarbit.appgrid.metainfo.xml'
       - 'PKGBUILD'
-      - 'PKGBUILD-aur'
+      - 'packages/**'
   pull_request:
     branches: [main]
     paths-ignore:
@@ -21,7 +21,7 @@ on:
       - '.gitignore'
       - 'dev.xarbit.appgrid.metainfo.xml'
       - 'PKGBUILD'
-      - 'PKGBUILD-aur'
+      - 'packages/**'
 
 permissions:
   contents: write

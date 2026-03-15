@@ -1,0 +1,60 @@
+name: Publish to AUR
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  aur:
+    name: Update AUR package
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Install dependencies
+        run: pacman -Syu --noconfirm base-devel git openssh
+
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/aur
+          chmod 600 ~/.ssh/aur
+          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host aur.archlinux.org
+            IdentityFile ~/.ssh/aur
+            User aur
+          EOF
+
+      - name: Generate .SRCINFO and push to AUR
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+
+          # Update pkgver and compute sha256sum from tarball
+          cd packages/buildpkg
+          sed -i "s/^pkgver=.*/pkgver=${VERSION}/" PKGBUILD
+          TARBALL_URL="https://github.com/xarbit/plasma6-applet-appgrid/archive/refs/tags/v${VERSION}.tar.gz"
+          SHA256=$(curl -sL "$TARBALL_URL" | sha256sum | cut -d' ' -f1)
+          sed -i "s/^sha256sums=.*/sha256sums=('${SHA256}')/" PKGBUILD
+
+          # Generate .SRCINFO (must run as non-root for makepkg)
+          useradd -m builder
+          chown -R builder: .
+          su builder -c "makepkg --printsrcinfo > .SRCINFO"
+
+          # Clone AUR repo, copy files, commit and push
+          cd /tmp
+          git clone ssh://aur@aur.archlinux.org/plasma6-applets-appgrid.git aur-repo
+          cd aur-repo
+          cp /github/workspace/packages/buildpkg/PKGBUILD .
+          cp /github/workspace/packages/buildpkg/.SRCINFO .
+
+          git config user.name "Jason Scurtu"
+          git config user.email "jscurtu@gmail.com"
+          git add PKGBUILD .SRCINFO
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Update to v${VERSION}"
+          git push

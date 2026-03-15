@@ -23,20 +23,15 @@ makedepends=(
     'kcoreaddons'
     'kwindowsystem'
     'gettext'
-    'git'
 )
 provides=('appgrid')
 conflicts=('appgrid')
 replaces=('appgrid')
-source=("${pkgname}-${pkgver}::git+https://github.com/xarbit/plasma6-applet-appgrid.git#tag=v${pkgver}")
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/xarbit/plasma6-applet-appgrid/archive/refs/tags/v${pkgver}.tar.gz")
 sha256sums=('SKIP')
 
-pkgver() {
-    grep -oP 'project\(AppGrid VERSION \K[0-9]+\.[0-9]+\.[0-9]+' "${pkgname}-${pkgver}/CMakeLists.txt"
-}
-
 build() {
-    cmake -B build -S "${pkgname}-${pkgver}" \
+    cmake -B build -S "plasma6-applet-appgrid-${pkgver}" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr
     cmake --build build -j$(nproc)
