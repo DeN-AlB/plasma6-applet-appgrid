@@ -109,15 +109,10 @@ jobs:
         run: |
           DESTDIR="$PWD/pkg" cmake --install build
           FEDORA_VER=$(rpm -E %fedora)
-          rpmbuild -bb --build-in-place \
-            --define "_topdir $PWD/rpmbuild" \
-            --define "_builddir $PWD" \
-            --define "version ${APP_VERSION}" \
-            --define "release 1.fc${FEDORA_VER}" \
-            /dev/stdin <<'SPEC'
+          cat > appgrid.spec <<SPEC
           Name:           plasma-applet-appgrid
-          Version:        %{version}
-          Release:        %{release}
+          Version:        ${APP_VERSION}
+          Release:        1.fc${FEDORA_VER}
           Summary:        A modern fullscreen application launcher for KDE Plasma
           License:        GPL-2.0-or-later
           URL:            https://github.com/xarbit/appgrid
@@ -135,6 +130,10 @@ jobs:
           /usr/share/metainfo/dev.xarbit.appgrid.metainfo.xml
           /usr/share/locale/*/LC_MESSAGES/dev.xarbit.appgrid.mo
           SPEC
+          rpmbuild -bb --build-in-place \
+            --define "_topdir $PWD/rpmbuild" \
+            --define "_builddir $PWD" \
+            appgrid.spec
           find rpmbuild/RPMS -name '*.rpm' -exec cp {} . \;
 
       - name: Upload artifact
@@ -154,13 +153,13 @@ jobs:
       - name: Install dependencies
         run: |
           zypper --non-interactive install \
-            cmake extra-cmake-modules gcc-c++ \
-            qt6-base-devel qt6-declarative-devel \
+            cmake gcc-c++ \
             kf6-extra-cmake-modules \
+            qt6-quick-devel qt6-gui-devel qt6-dbus-devel \
+            libplasma6-devel \
             kf6-kpackage-devel kf6-kio-devel \
             kf6-kservice-devel kf6-ki18n-devel kf6-kcoreaddons-devel \
             kf6-kwindowsystem-devel \
-            plasma6-libplasma-devel \
             layer-shell-qt6-devel \
             plasma6-workspace-devel \
             rpm-build
@@ -177,15 +176,10 @@ jobs:
         run: |
           DESTDIR="$PWD/pkg" cmake --install build
           TW_SNAPSHOT=$(grep -oP 'VERSION_ID="\K[^"]+' /etc/os-release)
-          rpmbuild -bb --build-in-place \
-            --define "_topdir $PWD/rpmbuild" \
-            --define "_builddir $PWD" \
-            --define "version ${APP_VERSION}" \
-            --define "release 1.opensuse.tw${TW_SNAPSHOT}" \
-            /dev/stdin <<'SPEC'
+          cat > appgrid.spec <<SPEC
           Name:           plasma6-applet-appgrid
-          Version:        %{version}
-          Release:        %{release}
+          Version:        ${APP_VERSION}
+          Release:        1.opensuse.tw${TW_SNAPSHOT}
           Summary:        A modern fullscreen application launcher for KDE Plasma
           License:        GPL-2.0-or-later
           URL:            https://github.com/xarbit/appgrid
@@ -203,6 +197,10 @@ jobs:
           /usr/share/metainfo/dev.xarbit.appgrid.metainfo.xml
           /usr/share/locale/*/LC_MESSAGES/dev.xarbit.appgrid.mo
           SPEC
+          rpmbuild -bb --build-in-place \
+            --define "_topdir $PWD/rpmbuild" \
+            --define "_builddir $PWD" \
+            appgrid.spec
           find rpmbuild/RPMS -name '*.rpm' -exec cp {} . \;
 
       - name: Upload artifact
@@ -229,8 +227,9 @@ jobs:
             qt6-base-dev qt6-declarative-dev \
             libplasma-dev libkf6package-dev libkf6kio-dev \
             libkf6service-dev libkf6i18n-dev libkf6coreaddons-dev \
-            libkf6windowsystem-dev liblayershellqt-dev \
-            libkworkspace6-dev plasma-workspace-dev \
+            libkf6windowsystem-dev \
+            liblayershellqtinterface-dev \
+            plasma-workspace-dev \
             dpkg-dev
 
       - name: Checkout
