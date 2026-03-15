@@ -4,8 +4,24 @@ on:
   push:
     branches: [main]
     tags: ['v*']
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - 'screenshots/**'
+      - '.gitignore'
+      - 'dev.xarbit.appgrid.metainfo.xml'
+      - 'PKGBUILD'
+      - 'PKGBUILD-aur'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - 'screenshots/**'
+      - '.gitignore'
+      - 'dev.xarbit.appgrid.metainfo.xml'
+      - 'PKGBUILD'
+      - 'PKGBUILD-aur'
 
 permissions:
   contents: write
