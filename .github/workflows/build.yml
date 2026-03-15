@@ -94,7 +94,7 @@ jobs:
             libplasma-devel kf6-kpackage-devel kf6-kio-devel \
             kf6-kservice-devel kf6-ki18n-devel kf6-kcoreaddons-devel \
             kf6-kwindowsystem-devel layer-shell-qt-devel \
-            libkworkspace6-devel plasma-workspace-devel \
+            plasma-workspace-devel \
             rpm-build
 
       - name: Checkout
@@ -156,10 +156,13 @@ jobs:
           zypper --non-interactive install \
             cmake extra-cmake-modules gcc-c++ \
             qt6-base-devel qt6-declarative-devel \
-            libplasma-devel kf6-kpackage-devel kf6-kio-devel \
+            kf6-extra-cmake-modules \
+            kf6-kpackage-devel kf6-kio-devel \
             kf6-kservice-devel kf6-ki18n-devel kf6-kcoreaddons-devel \
-            kf6-kwindowsystem-devel layer-shell-qt-devel \
-            libkworkspace6-devel plasma6-workspace-devel \
+            kf6-kwindowsystem-devel \
+            plasma6-libplasma-devel \
+            layer-shell-qt6-devel \
+            plasma6-workspace-devel \
             rpm-build
 
       - name: Checkout
@@ -208,76 +211,11 @@ jobs:
           name: opensuse-tumbleweed-package
           path: '*.rpm'
 
-  opensuse-leap:
-    name: openSUSE Leap
-    needs: version
-    runs-on: ubuntu-latest
-    container: opensuse/leap:latest
-    env:
-      APP_VERSION: ${{ needs.version.outputs.version }}
-    steps:
-      - name: Install dependencies
-        run: |
-          zypper --non-interactive install \
-            cmake extra-cmake-modules gcc-c++ \
-            qt6-base-devel qt6-declarative-devel \
-            libplasma-devel kf6-kpackage-devel kf6-kio-devel \
-            kf6-kservice-devel kf6-ki18n-devel kf6-kcoreaddons-devel \
-            kf6-kwindowsystem-devel layer-shell-qt-devel \
-            libkworkspace6-devel plasma6-workspace-devel \
-            rpm-build
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build
-        run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_INSTALL_PREFIX=/usr
-          cmake --build build -j$(nproc)
-
-      - name: Package RPM
-        run: |
-          DESTDIR="$PWD/pkg" cmake --install build
-          LEAP_VER=$(grep -oP 'VERSION_ID="\K[^"]+' /etc/os-release)
-          rpmbuild -bb --build-in-place \
-            --define "_topdir $PWD/rpmbuild" \
-            --define "_builddir $PWD" \
-            --define "version ${APP_VERSION}" \
-            --define "release 1.opensuse.leap${LEAP_VER}" \
-            /dev/stdin <<'SPEC'
-          Name:           plasma6-applet-appgrid
-          Version:        %{version}
-          Release:        %{release}
-          Summary:        A modern fullscreen application launcher for KDE Plasma
-          License:        GPL-2.0-or-later
-          URL:            https://github.com/xarbit/appgrid
-
-          %description
-          A modern fullscreen application launcher for KDE Plasma,
-          inspired by macOS Launchpad and COSMIC.
-
-          %install
-          cp -a %{_builddir}/pkg/* %{buildroot}/
-
-          %files
-          /usr/lib64/qt6/plugins/plasma/applets/dev.xarbit.appgrid.so
-          /usr/share/plasma/plasmoids/dev.xarbit.appgrid/
-          /usr/share/metainfo/dev.xarbit.appgrid.metainfo.xml
-          /usr/share/locale/*/LC_MESSAGES/dev.xarbit.appgrid.mo
-          SPEC
-          find rpmbuild/RPMS -name '*.rpm' -exec cp {} . \;
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: opensuse-leap-package
-          path: '*.rpm'
-
   ubuntu:
-    name: Ubuntu
+    name: Ubuntu 25.04
     needs: version
     runs-on: ubuntu-latest
-    container: ubuntu:oracular
+    container: ubuntu:plucky
     env:
       APP_VERSION: ${{ needs.version.outputs.version }}
     steps:
@@ -293,7 +231,7 @@ jobs:
             libkf6service-dev libkf6i18n-dev libkf6coreaddons-dev \
             libkf6windowsystem-dev liblayershellqt-dev \
             libkworkspace6-dev plasma-workspace-dev \
-            dpkg-dev debhelper lsb-release
+            dpkg-dev
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -333,7 +271,7 @@ jobs:
 
   release:
     name: Create Release
-    needs: [version, arch, fedora, opensuse-tumbleweed, opensuse-leap, ubuntu]
+    needs: [version, arch, fedora, opensuse-tumbleweed, ubuntu]
     runs-on: ubuntu-latest
     if: needs.version.outputs.is_release == 'true'
     steps:
