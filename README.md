@@ -2,6 +2,13 @@
 
 A modern application launcher for KDE Plasma, inspired by macOS Launchpad, COSMIC, and Pantheon.
 
+AppGrid ships as two plasmoids that share a common codebase:
+
+- **AppGrid** — a standalone window launcher that opens as a fullscreen overlay or centered popup, with its own blur, opacity, and corner radius settings.
+- **AppGrid (Panel)** — a native Plasma panel popup that opens anchored to the panel icon, just like Kickoff. For those who prefer the traditional style.
+
+Both variants share the same app grid, search, categories, quick commands, and configuration — pick whichever fits your workflow.
+
 ![KDE Plasma](https://img.shields.io/badge/KDE_Plasma-6.0+-blue)
 ![License](https://img.shields.io/badge/License-GPL--2.0--or--later-green)
 
