@@ -23,11 +23,11 @@ jobs:
           echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/aur
           chmod 600 ~/.ssh/aur
           ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
-          cat > ~/.ssh/config <<EOF
-          Host aur.archlinux.org
-            IdentityFile ~/.ssh/aur
-            User aur
-          EOF
+          printf '%s\n' \
+            "Host aur.archlinux.org" \
+            "  IdentityFile ~/.ssh/aur" \
+            "  User aur" > ~/.ssh/config
+          chmod 600 ~/.ssh/config
 
       - name: Generate .SRCINFO and push to AUR
         run: |
