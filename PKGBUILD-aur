@@ -26,6 +26,8 @@ makedepends=(
     'git'
 )
 provides=('appgrid')
+conflicts=('appgrid')
+replaces=('appgrid')
 source=("${pkgname}-${pkgver}::git+https://github.com/xarbit/plasma6-applet-appgrid.git#tag=v${pkgver}")
 sha256sums=('SKIP')
 

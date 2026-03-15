@@ -1,10 +1,14 @@
 # Maintainer: Jason Scurtu <jscurtu@gmail.com>
-pkgname=appgrid
+pkgname=plasma6-applets-appgrid
 pkgver=1.1.0
 pkgrel=1
 pkgdesc="A modern fullscreen application launcher for KDE Plasma"
 arch=('x86_64')
+url="https://github.com/xarbit/plasma6-applet-appgrid"
 license=('GPL-2.0-or-later')
+provides=('appgrid')
+conflicts=('appgrid')
+replaces=('appgrid')
 depends=(
     'plasma-workspace'
     'kservice'
