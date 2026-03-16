@@ -72,7 +72,7 @@ jobs:
             base-devel git cmake extra-cmake-modules \
             qt6-base qt6-declarative \
             libplasma kpackage kio kservice ki18n \
-            kcoreaddons kwindowsystem layer-shell-qt \
+            kcoreaddons kwindowsystem krunner layer-shell-qt \
             plasma-workspace
 
       - name: Checkout
@@ -133,7 +133,7 @@ jobs:
                 qt6-qtbase-devel qt6-qtdeclarative-devel \
                 libplasma-devel kf6-kpackage-devel kf6-kio-devel \
                 kf6-kservice-devel kf6-ki18n-devel kf6-kcoreaddons-devel \
-                kf6-kwindowsystem-devel layer-shell-qt-devel \
+                kf6-kwindowsystem-devel kf6-krunner-devel layer-shell-qt-devel \
                 plasma-workspace-devel \
                 gettext rpm-build
               cd /workspace
@@ -217,7 +217,7 @@ jobs:
                 libplasma6-devel \
                 kf6-kpackage-devel kf6-kio-devel \
                 kf6-kservice-devel kf6-ki18n-devel kf6-kcoreaddons-devel \
-                kf6-kwindowsystem-devel \
+                kf6-kwindowsystem-devel kf6-krunner-devel \
                 layer-shell-qt6-devel \
                 plasma6-workspace-devel \
                 gettext-tools rpm-build
@@ -307,7 +307,7 @@ jobs:
                 qt6-base-dev qt6-declarative-dev \
                 libplasma-dev libkf6package-dev libkf6kio-dev \
                 libkf6service-dev libkf6i18n-dev libkf6coreaddons-dev \
-                libkf6windowsystem-dev \
+                libkf6windowsystem-dev libkf6runner-dev \
                 liblayershellqtinterface-dev \
                 plasma-workspace-dev \
                 gettext dpkg-dev
