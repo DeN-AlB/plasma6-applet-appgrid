@@ -38,7 +38,8 @@ KDE Plasma ships with Kickoff and Kicker as its default application launchers. W
 - Option to hide the category bar for a minimal look
 - **Two category modes** — simplified built-in categories for a clean look, or system categories that respect KDE Menu Editor changes
 - KDE Menu Editor integration — right-click categories to edit them (system categories mode)
-- KRunner search integration with configurable search scope (all apps or active tab)
+- **Native KRunner integration** — search results from all enabled KRunner plugins (windows, bookmarks, calculator, web search, etc.) rendered inline with app results
+- Duplicate filtering — apps already shown in app results are automatically hidden from KRunner results
 - Quick commands — terminal, shell commands, file browser (type `?` for help)
 - Configurable terminal shell for quick commands (`/bin/sh`, `/bin/bash`, `/bin/zsh`, etc.)
 - Sort by most used or alphabetically
