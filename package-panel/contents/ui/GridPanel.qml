@@ -20,6 +20,9 @@ Kirigami.ShadowedRectangle {
 
     function shakeAllIcons() { appGrid.shakeAllIcons() }
 
+    // Dev/testing flags (populated at build time from BUILDFLAGS)
+    DevFlags { id: devFlags }
+
     // -- Derived properties --
     readonly property var appsModel: Plasmoid ? Plasmoid.appsModel : null
     readonly property bool isSearching: searchBar.text.length > 0
@@ -199,6 +202,14 @@ Kirigami.ShadowedRectangle {
     // Eat clicks so they don't pass through the panel
     MouseArea { anchors.fill: parent }
 
+    // Handle Alt+letter mnemonics for category bar (including overflow items)
+    Keys.onPressed: function(event) {
+        if ((event.modifiers & Qt.AltModifier) && event.key >= Qt.Key_A && event.key <= Qt.Key_Z) {
+            if (categoryBar.visible && categoryBar.selectByMnemonic(event.key))
+                event.accepted = true
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: panel.panelMargin
@@ -320,6 +331,7 @@ Kirigami.ShadowedRectangle {
             id: categoryBar
             visible: !panel.isSearching && !panel.isPrefixMode
             appsModel: panel.appsModel
+            devExtraCategories: devFlags.extraCategories
             onFavoritesToggled: function(active) {
                 categoryBar.favoritesActive = active
                 if (panel.appsModel) {

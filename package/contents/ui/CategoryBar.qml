@@ -3,6 +3,7 @@
     SPDX-License-Identifier: GPL-2.0-or-later
 
     Horizontal category filter bar with favorites, "All", and dynamic categories.
+    When categories overflow, the bar becomes scrollable with directional arrow buttons.
 */
 
 import QtQuick
@@ -16,23 +17,38 @@ RowLayout {
 
     property var appsModel: null
     property bool favoritesActive: false
+    property bool devExtraCategories: false
     readonly property bool favoritesFirst: Plasmoid.configuration.startWithFavorites || false
 
     // Mnemonic map: uppercase letter → { type: "all"|"favorites"|"category", name: string }
     property var mnemonicMap: ({})
 
+    // Dev test categories injected when DEV_EXTRA_CATEGORIES is enabled
+    readonly property var testCategories: [
+        "Education", "Science", "Games", "Accessibility",
+        "Photography", "Video", "Audio", "Network",
+        "Finance", "News", "Weather", "Navigation"
+    ]
+
     signal favoritesToggled(bool active)
 
-    // Build unique mnemonic assignments for all items.
-    // Each item gets the first letter in its name that isn't already taken.
+    // Returns effective category list (real + dev test categories)
+    function effectiveCategories() {
+        var cats = categoryBar.appsModel ? categoryBar.appsModel.categories() : []
+        if (categoryBar.devExtraCategories)
+            cats = cats.concat(categoryBar.testCategories)
+        return cats
+    }
+
+    // -- Mnemonic helpers --
+
     function rebuildMnemonics() {
         var used = {}
         var map = {}
         var items = []
 
-        // Collect all items: All, categories, Favorites
         items.push({ type: "all", name: i18n("All") })
-        var cats = categoryBar.appsModel ? categoryBar.appsModel.categories() : []
+        var cats = effectiveCategories()
         for (var i = 0; i < cats.length; i++)
             items.push({ type: "category", name: cats[i] })
         items.push({ type: "favorites", name: i18n("Favorites") })
@@ -51,7 +67,6 @@ RowLayout {
         mnemonicMap = map
     }
 
-    // Returns text with '&' inserted before the mnemonic character
     function mnemonicText(name) {
         for (var letter in mnemonicMap) {
             var entry = mnemonicMap[letter]
@@ -71,10 +86,8 @@ RowLayout {
             return false
 
         if (entry.type === "all") {
-            if (categoryBar.favoritesActive)
-                categoryBar.favoritesToggled(false)
-            if (categoryBar.appsModel)
-                categoryBar.appsModel.filterCategory = ""
+            selectAll()
+            scrollToSelected()
             return true
         }
         if (entry.type === "favorites") {
@@ -82,13 +95,61 @@ RowLayout {
             return true
         }
         if (entry.type === "category") {
-            if (categoryBar.favoritesActive)
-                categoryBar.favoritesToggled(false)
-            if (categoryBar.appsModel)
-                categoryBar.appsModel.filterCategory = entry.name
+            selectCategory(entry.name)
+            scrollToSelected()
             return true
         }
         return false
+    }
+
+    // -- Category action helpers --
+
+    function selectAll() {
+        if (categoryBar.favoritesActive)
+            categoryBar.favoritesToggled(false)
+        if (categoryBar.appsModel)
+            categoryBar.appsModel.filterCategory = ""
+    }
+
+    function selectCategory(name) {
+        if (categoryBar.favoritesActive)
+            categoryBar.favoritesToggled(false)
+        if (categoryBar.appsModel)
+            categoryBar.appsModel.filterCategory = name
+    }
+
+    // Scroll the flickable so the currently selected category button is visible
+    function scrollToSelected() {
+        Qt.callLater(function() {
+            var active = categoryBar.appsModel ? categoryBar.appsModel.filterCategory : ""
+
+            // "All" is selected — scroll to start
+            if (active === "") {
+                catFlick.contentX = 0
+                return
+            }
+
+            // Find the matching repeater item
+            for (var i = 0; i < catRepeater.count; i++) {
+                var item = catRepeater.itemAt(i)
+                if (!item) continue
+                var cats = effectiveCategories()
+                if (i < cats.length && cats[i] === active) {
+                    var itemLeft = item.x
+                    var itemRight = item.x + item.width
+                    var viewLeft = catFlick.contentX
+                    var viewRight = catFlick.contentX + catFlick.width
+
+                    if (itemLeft < viewLeft)
+                        catFlick.contentX = Math.max(0, itemLeft - Kirigami.Units.smallSpacing)
+                    else if (itemRight > viewRight)
+                        catFlick.contentX = Math.min(
+                            catFlick.contentWidth - catFlick.width,
+                            itemRight - catFlick.width + Kirigami.Units.smallSpacing)
+                    return
+                }
+            }
+        })
     }
 
     Component.onCompleted: rebuildMnemonics()
@@ -101,6 +162,7 @@ RowLayout {
     Layout.fillWidth: true
     spacing: 0
 
+    // -- Favorites (left) --
     PlasmaComponents.ToolButton {
         id: favButtonLeft
         visible: categoryBar.favoritesFirst
@@ -116,44 +178,100 @@ RowLayout {
         Accessible.role: Accessible.Button
     }
 
+    // -- "All" button (always visible, pinned) --
     PlasmaComponents.ToolButton {
-        Layout.fillWidth: true
+        id: allButton
         text: categoryBar.mnemonicText(i18n("All"))
         font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.1
         checked: !categoryBar.favoritesActive
                  && (!categoryBar.appsModel || categoryBar.appsModel.filterCategory === "")
         onClicked: {
-            if (categoryBar.favoritesActive)
-                categoryBar.favoritesToggled(false)
-            if (categoryBar.appsModel)
-                categoryBar.appsModel.filterCategory = ""
+            categoryBar.selectAll()
+            catFlick.contentX = 0
         }
 
         Accessible.name: i18n("All applications")
         Accessible.role: Accessible.Button
     }
 
-    Repeater {
-        model: categoryBar.appsModel ? categoryBar.appsModel.categories() : []
-        delegate: PlasmaComponents.ToolButton {
-            Layout.fillWidth: true
-            required property string modelData
-            text: categoryBar.mnemonicText(modelData)
-            font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.1
-            checked: !categoryBar.favoritesActive
-                     && categoryBar.appsModel && categoryBar.appsModel.filterCategory === modelData
-            onClicked: {
-                if (categoryBar.favoritesActive)
-                    categoryBar.favoritesToggled(false)
-                if (categoryBar.appsModel)
-                    categoryBar.appsModel.filterCategory = modelData
-            }
+    // -- Scroll left arrow --
+    PlasmaComponents.ToolButton {
+        id: scrollLeftBtn
+        visible: catFlick.contentX > 0
+        icon.name: "arrow-left"
+        implicitWidth: Kirigami.Units.iconSizes.small + Kirigami.Units.smallSpacing * 2
+        onClicked: {
+            catFlick.contentX = Math.max(0, catFlick.contentX - catFlick.width * 0.5)
+        }
 
-            Accessible.name: modelData
-            Accessible.role: Accessible.Button
+        Accessible.name: i18n("Scroll categories left")
+        Accessible.role: Accessible.Button
+    }
+
+    // -- Scrollable category buttons --
+    Flickable {
+        id: catFlick
+        Layout.fillWidth: true
+        implicitHeight: catRow.implicitHeight
+        contentWidth: catRow.width
+        contentHeight: catRow.implicitHeight
+        clip: true
+        flickableDirection: Flickable.HorizontalFlick
+        boundsBehavior: Flickable.StopAtBounds
+
+        Behavior on contentX {
+            SmoothedAnimation { velocity: 800 }
+        }
+
+        RowLayout {
+            id: catRow
+            width: Math.max(implicitWidth, catFlick.width)
+            height: parent.height
+            spacing: Kirigami.Units.smallSpacing
+
+            Repeater {
+                id: catRepeater
+                model: categoryBar.effectiveCategories()
+                delegate: PlasmaComponents.ToolButton {
+                    Layout.fillWidth: true
+                    required property int index
+                    required property string modelData
+                    leftPadding: Kirigami.Units.largeSpacing
+                    rightPadding: Kirigami.Units.largeSpacing
+                    text: categoryBar.mnemonicText(modelData)
+                    font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.1
+                    checked: !categoryBar.favoritesActive
+                             && categoryBar.appsModel
+                             && categoryBar.appsModel.filterCategory === modelData
+                    onClicked: {
+                        categoryBar.selectCategory(modelData)
+                        categoryBar.scrollToSelected()
+                    }
+
+                    Accessible.name: modelData
+                    Accessible.role: Accessible.Button
+                }
+            }
         }
     }
 
+    // -- Scroll right arrow --
+    PlasmaComponents.ToolButton {
+        id: scrollRightBtn
+        visible: catFlick.contentX + catFlick.width < catFlick.contentWidth - 1
+        icon.name: "arrow-right"
+        implicitWidth: Kirigami.Units.iconSizes.small + Kirigami.Units.smallSpacing * 2
+        onClicked: {
+            catFlick.contentX = Math.min(
+                catFlick.contentWidth - catFlick.width,
+                catFlick.contentX + catFlick.width * 0.5)
+        }
+
+        Accessible.name: i18n("Scroll categories right")
+        Accessible.role: Accessible.Button
+    }
+
+    // -- Favorites (right) --
     PlasmaComponents.ToolButton {
         id: favButtonRight
         visible: !categoryBar.favoritesFirst
