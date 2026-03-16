@@ -33,6 +33,7 @@ KCMUtils.SimpleKCM {
     property alias cfg_showActionLabels: showActionLabels.checked
     property alias cfg_showRecentApps: showRecentApps.checked
     property alias cfg_useExtraRunners: useExtraRunners.checked
+    property alias cfg_useSystemCategories: useSystemCategories.checked
     property string cfg_terminalShell: Plasmoid.configuration.terminalShell
     property var cfg_hiddenApps: Plasmoid.configuration.hiddenApps
 
@@ -191,6 +192,11 @@ KCMUtils.SimpleKCM {
             text: i18n("Start with favorites tab")
         }
 
+        QQC2.CheckBox {
+            id: useSystemCategories
+            text: i18n("Use system categories (supports KDE Menu Editor)")
+        }
+
         QQC2.ComboBox {
             id: terminalShell
             Kirigami.FormData.label: i18n("Terminal shell:")
@@ -274,6 +280,7 @@ KCMUtils.SimpleKCM {
                 showActionLabels.checked = false
                 showRecentApps.checked = true
                 useExtraRunners.checked = true
+                useSystemCategories.checked = false
                 configGeneral.cfg_terminalShell = ""
                 terminalShell.currentIndex = 0
             }

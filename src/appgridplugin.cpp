@@ -182,6 +182,14 @@ QStringList AppGridPlugin::availableShells()
     return shells;
 }
 
+void AppGridPlugin::openMenuEditor(const QString &menuPath)
+{
+    QStringList args;
+    if (!menuPath.isEmpty())
+        args << menuPath;
+    QProcess::startDetached(QStringLiteral("kmenuedit"), args);
+}
+
 QVariantList AppGridPlugin::listDirectory(const QString &path)
 {
     QString expanded = path;

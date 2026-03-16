@@ -110,6 +110,10 @@
       <label>List of known application storage IDs for new-app detection.</label>
       <default></default>
     </entry>
+    <entry name="useSystemCategories" type="Bool">
+      <label>Whether to use KDE menu system categories instead of the simplified built-in mapping.</label>
+      <default>false</default>
+    </entry>
     <entry name="terminalShell" type="String">
       <label>Shell to use for t: terminal commands (e.g. /bin/bash, /bin/zsh). Empty uses /bin/sh.</label>
       <default></default>

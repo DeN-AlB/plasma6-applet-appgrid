@@ -15,7 +15,7 @@
 #include <QCollator>
 #include <algorithm>
 
-// Map freedesktop categories to user-friendly groups
+// Simplified category mapping — maps freedesktop categories to clean groups
 static const QHash<QString, QString> &categoryMap()
 {
     static const QHash<QString, QString> map = {
@@ -171,16 +171,32 @@ QString AppModel::mapCategory(const QStringList &categories) const
     return QStringLiteral("Other");
 }
 
+bool AppModel::useSystemCategories() const
+{
+    return m_useSystemCategories;
+}
+
+void AppModel::setUseSystemCategories(bool enabled)
+{
+    if (m_useSystemCategories == enabled)
+        return;
+    m_useSystemCategories = enabled;
+    emit useSystemCategoriesChanged();
+    reload();
+}
+
 void AppModel::loadApplications()
 {
     QSet<QString> seen;
     QSet<QString> categorySet;
 
     // Traverse the XDG menu hierarchy via KServiceGroup.
-    // This respects .menu exclude rules and shows only apps that
-    // belong to the desktop menu, like Kicker/Kickoff do.
-    std::function<void(KServiceGroup::Ptr)> walkGroup;
-    walkGroup = [&](KServiceGroup::Ptr group) {
+    // In system mode: top-level group captions define categories (respects kmenuedit).
+    // In simple mode: the hardcoded mapping table maps desktop categories to clean groups.
+    const bool systemMode = m_useSystemCategories;
+
+    std::function<void(KServiceGroup::Ptr, const QString &)> walkGroup;
+    walkGroup = [&](KServiceGroup::Ptr group, const QString &category) {
         if (!group || !group->isValid())
             return;
 
@@ -191,7 +207,22 @@ void AppModel::loadApplications()
 
         for (const auto &entry : entries) {
             if (entry->isType(KST_KServiceGroup)) {
-                walkGroup(KServiceGroup::Ptr(static_cast<KServiceGroup *>(entry.data())));
+                auto subGroup = KServiceGroup::Ptr(static_cast<KServiceGroup *>(entry.data()));
+                if (!subGroup || !subGroup->isValid() || subGroup->noDisplay())
+                    continue;
+
+                QString subCategory = category;
+                if (systemMode && subCategory.isEmpty()) {
+                    subCategory = subGroup->caption();
+                    if (subCategory.isEmpty())
+                        subCategory = subGroup->name();
+                    // Store menu path for kmenuedit (e.g. "Education/")
+                    QString relPath = subGroup->relPath();
+                    if (relPath.endsWith(QLatin1Char('/')))
+                        relPath.chop(1);
+                    m_categoryMenuPaths[subCategory] = relPath;
+                }
+                walkGroup(subGroup, subCategory);
                 continue;
             }
 
@@ -221,14 +252,18 @@ void AppModel::loadApplications()
             appEntry.genericName = service->genericName();
             appEntry.exec = service->exec();
             appEntry.storageId = storageId;
-            appEntry.category = mapCategory(service->categories());
+
+            if (systemMode)
+                appEntry.category = category.isEmpty() ? QStringLiteral("Other") : category;
+            else
+                appEntry.category = mapCategory(service->categories());
 
             categorySet.insert(appEntry.category);
             m_apps.append(appEntry);
         }
     };
 
-    walkGroup(KServiceGroup::root());
+    walkGroup(KServiceGroup::root(), QString());
 
     // Sort alphabetically
     QCollator collator;
@@ -272,8 +307,14 @@ void AppModel::reload()
     beginResetModel();
     m_apps.clear();
     m_categories.clear();
+    m_categoryMenuPaths.clear();
     loadApplications();
     endResetModel();
+}
+
+QString AppModel::categoryMenuPath(const QString &category) const
+{
+    return m_categoryMenuPaths.value(category);
 }
 
 // --- AppFilterModel ---
@@ -562,6 +603,22 @@ void AppFilterModel::setShowFavoritesOnly(bool enabled)
     emit showFavoritesOnlyChanged();
 }
 
+bool AppFilterModel::useSystemCategories() const
+{
+    auto *src = qobject_cast<AppModel *>(sourceModel());
+    return src ? src->useSystemCategories() : false;
+}
+
+void AppFilterModel::setUseSystemCategories(bool enabled)
+{
+    auto *src = qobject_cast<AppModel *>(sourceModel());
+    if (src) {
+        src->setUseSystemCategories(enabled);
+        emit useSystemCategoriesChanged();
+        emit categoriesChanged();
+    }
+}
+
 int AppFilterModel::getLaunchCount(const QString &storageId) const
 {
     return m_launchCounts.value(storageId, 0);
@@ -648,6 +705,12 @@ QStringList AppFilterModel::categories() const
 {
     auto *model = qobject_cast<AppModel *>(sourceModel());
     return model ? model->categories() : QStringList();
+}
+
+QString AppFilterModel::categoryMenuPath(const QString &category) const
+{
+    auto *model = qobject_cast<AppModel *>(sourceModel());
+    return model ? model->categoryMenuPath(category) : QString();
 }
 
 QVariantMap AppFilterModel::get(int proxyRow) const

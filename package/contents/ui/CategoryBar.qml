@@ -23,6 +23,9 @@ RowLayout {
     // Mnemonic map: uppercase letter → { type: "all"|"favorites"|"category", name: string }
     property var mnemonicMap: ({})
 
+    // Reactive category list — updated when model categories change
+    property var categoryList: []
+
     // Dev test categories injected when DEV_EXTRA_CATEGORIES is enabled
     readonly property var testCategories: [
         "Education", "Science", "Games", "Accessibility",
@@ -32,12 +35,17 @@ RowLayout {
 
     signal favoritesToggled(bool active)
 
-    // Returns effective category list (real + dev test categories)
-    function effectiveCategories() {
+    // Rebuilds the category list from the model
+    function refreshCategories() {
         var cats = categoryBar.appsModel ? categoryBar.appsModel.categories() : []
         if (categoryBar.devExtraCategories)
             cats = cats.concat(categoryBar.testCategories)
-        return cats
+        categoryList = cats
+    }
+
+    // Returns effective category list
+    function effectiveCategories() {
+        return categoryList
     }
 
     // -- Mnemonic helpers --
@@ -152,11 +160,11 @@ RowLayout {
         })
     }
 
-    Component.onCompleted: rebuildMnemonics()
-    onAppsModelChanged: rebuildMnemonics()
+    Component.onCompleted: { refreshCategories(); rebuildMnemonics() }
+    onAppsModelChanged: { refreshCategories(); rebuildMnemonics() }
     Connections {
         target: categoryBar.appsModel
-        function onCategoriesChanged() { categoryBar.rebuildMnemonics() }
+        function onCategoriesChanged() { categoryBar.refreshCategories(); categoryBar.rebuildMnemonics() }
     }
 
     Layout.fillWidth: true
@@ -248,6 +256,17 @@ RowLayout {
                         categoryBar.scrollToSelected()
                     }
 
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.RightButton
+                        onClicked: function(mouse) {
+                            if (categoryBar.appsModel && categoryBar.appsModel.useSystemCategories) {
+                                catContextMenu.categoryName = modelData
+                                catContextMenu.popup()
+                            }
+                        }
+                    }
+
                     Accessible.name: modelData
                     Accessible.role: Accessible.Button
                 }
@@ -285,5 +304,25 @@ RowLayout {
 
         Accessible.name: i18n("Favorites")
         Accessible.role: Accessible.Button
+    }
+
+    // -- Category context menu (system categories mode only) --
+    PlasmaComponents.Menu {
+        id: catContextMenu
+        property string categoryName: ""
+
+        PlasmaComponents.MenuItem {
+            icon.name: "kmenuedit"
+            text: i18n("Edit \"%1\" in Menu Editor…", catContextMenu.categoryName)
+            onClicked: {
+                var menuPath = categoryBar.appsModel.categoryMenuPath(catContextMenu.categoryName)
+                Plasmoid.openMenuEditor(menuPath || "")
+            }
+        }
+        PlasmaComponents.MenuItem {
+            icon.name: "kmenuedit"
+            text: i18n("Open Menu Editor…")
+            onClicked: Plasmoid.openMenuEditor("")
+        }
     }
 }

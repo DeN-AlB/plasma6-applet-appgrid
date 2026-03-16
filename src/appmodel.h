@@ -49,6 +49,14 @@ public:
 
     Q_INVOKABLE void launch(int index);
     Q_INVOKABLE QStringList categories() const;
+    Q_INVOKABLE QString categoryMenuPath(const QString &category) const;
+
+    bool useSystemCategories() const;
+    void setUseSystemCategories(bool enabled);
+    Q_PROPERTY(bool useSystemCategories READ useSystemCategories WRITE setUseSystemCategories NOTIFY useSystemCategoriesChanged)
+
+signals:
+    void useSystemCategoriesChanged();
 
 private slots:
     void reload();
@@ -59,6 +67,8 @@ private:
 
     QVector<AppEntry> m_apps;
     QStringList m_categories;
+    QHash<QString, QString> m_categoryMenuPaths;
+    bool m_useSystemCategories = false;
 };
 
 /**
@@ -81,6 +91,7 @@ class AppFilterModel : public QSortFilterProxyModel {
     Q_PROPERTY(QVariantMap launchCounts READ launchCountsMap WRITE setLaunchCountsMap NOTIFY launchCountsChanged)
     Q_PROPERTY(QStringList knownApps READ knownApps WRITE setKnownApps NOTIFY knownAppsChanged)
     Q_PROPERTY(bool showFavoritesOnly READ showFavoritesOnly WRITE setShowFavoritesOnly NOTIFY showFavoritesOnlyChanged)
+    Q_PROPERTY(bool useSystemCategories READ useSystemCategories WRITE setUseSystemCategories NOTIFY useSystemCategoriesChanged)
 
 public:
     /** Sort modes for the grid view. */
@@ -124,9 +135,13 @@ public:
     bool showFavoritesOnly() const;
     void setShowFavoritesOnly(bool enabled);
 
+    bool useSystemCategories() const;
+    void setUseSystemCategories(bool enabled);
+
     Q_INVOKABLE void launch(int proxyIndex);
     Q_INVOKABLE void launchByStorageId(const QString &storageId);
     Q_INVOKABLE QStringList categories() const;
+    Q_INVOKABLE QString categoryMenuPath(const QString &category) const;
     Q_INVOKABLE QVariantMap get(int proxyRow) const;
     Q_INVOKABLE void hideApp(int proxyIndex);
     Q_INVOKABLE void unhideApp(const QString &storageId);
@@ -150,6 +165,8 @@ signals:
     void launchCountsChanged();
     void knownAppsChanged();
     void showFavoritesOnlyChanged();
+    void useSystemCategoriesChanged();
+    void categoriesChanged();
 
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;

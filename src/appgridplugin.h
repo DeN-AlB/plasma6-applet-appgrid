@@ -57,6 +57,9 @@ public:
     /** Returns list of installed shells from /etc/shells. */
     Q_INVOKABLE QStringList availableShells();
 
+    /** Launch KDE Menu Editor, optionally navigating to @p menuPath (e.g. "Education"). */
+    Q_INVOKABLE void openMenuEditor(const QString &menuPath = QString());
+
     /** List directory contents at @p path. Returns a list of {name, path, isDir, icon}. */
     Q_INVOKABLE QVariantList listDirectory(const QString &path);
 

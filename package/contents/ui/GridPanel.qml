@@ -147,6 +147,12 @@ Kirigami.ShadowedRectangle {
 
     onColumnsChanged: if (appsModel) appsModel.maxRecentApps = columns
 
+    Binding {
+        target: panel.appsModel
+        property: "useSystemCategories"
+        value: Plasmoid.configuration.useSystemCategories || false
+    }
+
     Connections {
         target: panel.appsModel
         function onRecentAppsChanged() {
@@ -174,6 +180,7 @@ Kirigami.ShadowedRectangle {
             appsModel.favoriteApps = Plasmoid.configuration.favoriteApps || []
             appsModel.maxRecentApps = columns
             appsModel.sortMode = Plasmoid.configuration.sortMode || 0
+            appsModel.useSystemCategories = Plasmoid.configuration.useSystemCategories || false
             appsModel.launchCounts = launchCountsToMap(Plasmoid.configuration.launchCounts)
             appsModel.knownApps = Plasmoid.configuration.knownApps || []
             if (appsModel.knownApps.length === 0)
