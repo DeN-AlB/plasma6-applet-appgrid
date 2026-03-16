@@ -68,6 +68,10 @@ KDE Plasma ships with Kickoff and Kicker as its default application launchers. W
 
 ## Installation
 
+### Pre-built packages
+
+Pre-built packages for Fedora, openSUSE, Ubuntu, and Debian are available on the [Releases](https://github.com/xarbit/plasma6-applet-appgrid/releases) page.
+
 ### Arch Linux (AUR)
 
 ```bash
