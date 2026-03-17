@@ -48,6 +48,7 @@ KDE Plasma ships with Kickoff and Kicker as its default application launchers. W
 - Session management (sleep, restart, shut down, lock, log out)
 - Context menu with add to favorites, pin to Task Manager, add to Desktop, hide apps
 - Customizable grid size, icon size, background blur, opacity, and corner radius
+- Multi-monitor support — configurable to open on active screen (mouse focus) or panel screen
 - Reset to defaults button for easy configuration recovery
 - Drop-in replacement via Plasma's Show Alternatives
 

@@ -31,6 +31,7 @@ KCMUtils.SimpleKCM {
     property alias cfg_showScrollbars: showScrollbars.checked
     property alias cfg_backgroundOpacity: backgroundOpacity.value
     property alias cfg_enableBlur: enableBlur.checked
+    property alias cfg_openOnActiveScreen: openOnActiveScreen.checked
     property alias cfg_showCategoryBar: showCategoryBar.checked
     property alias cfg_searchAll: searchAll.checked
     property alias cfg_startWithFavorites: startWithFavorites.checked
@@ -196,6 +197,11 @@ KCMUtils.SimpleKCM {
         }
 
         QQC2.CheckBox {
+            id: openOnActiveScreen
+            text: i18nd("dev.xarbit.appgrid", "Open on screen with mouse focus (otherwise on panel screen)")
+        }
+
+        QQC2.CheckBox {
             id: searchAll
             text: i18nd("dev.xarbit.appgrid", "Search all apps regardless of active tab")
         }
@@ -332,6 +338,7 @@ KCMUtils.SimpleKCM {
                 showScrollbars.checked = false
                 backgroundOpacity.value = 85
                 enableBlur.checked = true
+                openOnActiveScreen.checked = true
                 showCategoryBar.checked = true
                 searchAll.checked = true
                 startWithFavorites.checked = false

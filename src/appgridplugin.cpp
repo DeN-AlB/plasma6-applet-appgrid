@@ -15,6 +15,7 @@
 #include <PlasmaQuick/AppletQuickItem>
 #include <algorithm>
 #include <QDir>
+#include <QGuiApplication>
 #include <QFile>
 #include <QTextStream>
 #include <QFileInfo>
@@ -100,6 +101,29 @@ void AppGridPlugin::configureWindow(QWindow *window)
         layerWindow->setLayer(LayerShellQt::Window::LayerOverlay);
         layerWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityOnDemand);
         layerWindow->setScope(QStringLiteral("appgrid"));
+    }
+}
+
+void AppGridPlugin::updateWindowScreen(QWindow *window, bool useActiveScreen)
+{
+    if (!window)
+        return;
+
+    auto *layerWindow = LayerShellQt::Window::get(window);
+    if (!layerWindow)
+        return;
+
+    if (useActiveScreen) {
+        layerWindow->setWantsToBeOnActiveScreen(true);
+    } else {
+        int screenNum = containment() ? containment()->screen() : -1;
+        const auto screens = QGuiApplication::screens();
+        if (screenNum >= 0 && screenNum < screens.size()) {
+            layerWindow->setWantsToBeOnActiveScreen(false);
+            layerWindow->setScreen(screens.at(screenNum));
+        } else {
+            layerWindow->setWantsToBeOnActiveScreen(true);
+        }
     }
 }
 

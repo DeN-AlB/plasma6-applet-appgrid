@@ -16,7 +16,6 @@ Window {
 
     property var appletInterface: null
 
-    readonly property bool isPopupMode: true
     readonly property real panelShadowMargin: Kirigami.Units.gridUnit * 2
 
     // Compute window size independently from panel to avoid circular dependencies.
@@ -34,10 +33,11 @@ Window {
     readonly property real estPanelWidth: estCellWidth * columns + Kirigami.Units.largeSpacing * 4
     readonly property real estPanelHeight: estCellHeight * rows + Kirigami.Units.largeSpacing * 4 + Kirigami.Units.gridUnit * 5
 
-    width: isPopupMode ? Math.min(estPanelWidth, Screen.width * 0.9) + panelShadowMargin * 2 : Screen.width
-    height: isPopupMode ? Math.min(estPanelHeight, Screen.height * 0.9) + panelShadowMargin * 2 : Screen.height
-    x: isPopupMode ? Math.round((Screen.width - width) / 2) : 0
-    y: isPopupMode ? Math.round((Screen.height - height) / 2) : 0
+    // LayerShell overlay covers the full screen; the panel centers itself within it
+    width: Screen.width
+    height: Screen.height
+    x: 0
+    y: 0
     visible: false
     color: "transparent"
     flags: Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint | Qt.Tool
@@ -72,6 +72,7 @@ Window {
             Plasmoid.configureWindow(root)
             windowConfigured = true
         }
+        Plasmoid.updateWindowScreen(root, Plasmoid.configuration.openOnActiveScreen !== false)
         panel.resetState()
         visible = true
         applyBlur()
@@ -93,7 +94,7 @@ Window {
 
     // In popup mode, close when window loses focus
     onActiveChanged: {
-        if (isPopupMode && !active && visible) {
+        if (!active && visible) {
             if (appletInterface)
                 appletInterface.closeWindow()
         }

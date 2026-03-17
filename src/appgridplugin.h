@@ -58,6 +58,9 @@ public:
     /** Configure @p window as a Wayland layer-shell overlay with alpha support. */
     Q_INVOKABLE void configureWindow(QWindow *window);
 
+    /** Update which screen the overlay appears on. */
+    Q_INVOKABLE void updateWindowScreen(QWindow *window, bool useActiveScreen);
+
     /** Set a rounded-rect blur region on @p window matching the panel geometry. */
     Q_INVOKABLE void setBlurBehind(QWindow *window, bool enable, int x, int y, int w, int h, int radius);
 

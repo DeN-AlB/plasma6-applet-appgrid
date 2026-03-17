@@ -35,11 +35,6 @@ PlasmoidItem {
         function onActivated() { kicker.toggleWindow() }
     }
 
-    // Recreate window when display mode changes
-    Connections {
-        target: Plasmoid.configuration
-        function onDisplayModeChanged() { destroyGridWindow() }
-    }
 
     function destroyGridWindow() {
         if (gridWindow) {
