@@ -82,6 +82,7 @@ private:
     RunnerFilterModel *m_runnerModel = nullptr;
     int m_runnerSubtextRole = -1;
     int m_runnerCategoryRole = -1;
+    int m_runnerUrlsRole = -1;
     bool m_resetPending = false;
 };
 

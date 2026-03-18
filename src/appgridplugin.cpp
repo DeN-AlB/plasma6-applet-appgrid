@@ -494,6 +494,7 @@ void UnifiedSearchModel::setRunnerModel(RunnerFilterModel *model)
     for (auto it = roles.begin(); it != roles.end(); ++it) {
         if (it.value() == "subtext") m_runnerSubtextRole = it.key();
         if (it.value() == "category") m_runnerCategoryRole = it.key();
+        if (it.value() == "urls") m_runnerUrlsRole = it.key();
     }
 }
 
@@ -566,8 +567,20 @@ QVariant UnifiedSearchModel::data(const QModelIndex &index, int role) const
         case IconRole:        return srcIdx.data(Qt::DecorationRole);
         case SubtextRole:     return m_runnerSubtextRole >= 0 ? srcIdx.data(m_runnerSubtextRole) : QVariant();
         case CategoryRole:    return m_runnerCategoryRole >= 0 ? srcIdx.data(m_runnerCategoryRole) : QVariant();
-        case StorageIdRole:   return QString();
-        case DesktopFileRole: return QString();
+        case StorageIdRole:
+        case DesktopFileRole: {
+            if (m_runnerUrlsRole < 0) return QString();
+            const auto urls = srcIdx.data(m_runnerUrlsRole).value<QList<QUrl>>();
+            for (const auto &url : urls) {
+                const auto path = url.toLocalFile();
+                if (path.endsWith(QLatin1String(".desktop"))) {
+                    if (role == StorageIdRole)
+                        return QFileInfo(path).fileName();
+                    return path;
+                }
+            }
+            return QString();
+        }
         case IsNewRole:       return false;
         }
     }

@@ -21,8 +21,6 @@ KCMUtils.SimpleKCM {
     property string cfg_icon: Plasmoid.configuration.icon
     property bool cfg_useCustomButtonImage: Plasmoid.configuration.useCustomButtonImage
     property string cfg_customButtonImage: Plasmoid.configuration.customButtonImage
-    property alias cfg_gridColumns: gridColumns.value
-    property alias cfg_gridRows: gridRows.value
     property alias cfg_iconSize: iconSize.currentIndex
     property alias cfg_sortMode: sortMode.currentIndex
     property alias cfg_showDividers: showDividers.checked
@@ -144,18 +142,6 @@ KCMUtils.SimpleKCM {
         // --- Grid size ---
 
         Item { Kirigami.FormData.isSection: true }
-
-        QQC2.SpinBox {
-            id: gridColumns
-            Kirigami.FormData.label: i18nd("dev.xarbit.appgrid", "Icons per row:")
-            from: 3; to: 10
-        }
-
-        QQC2.SpinBox {
-            id: gridRows
-            Kirigami.FormData.label: i18nd("dev.xarbit.appgrid", "Visible rows:")
-            from: 2; to: 10
-        }
 
         QQC2.ComboBox {
             id: iconSize
@@ -282,8 +268,6 @@ KCMUtils.SimpleKCM {
                 configGeneral.cfg_icon = "start-here-kde-symbolic"
                 configGeneral.cfg_useCustomButtonImage = false
                 configGeneral.cfg_customButtonImage = ""
-                gridColumns.value = 7
-                gridRows.value = 4
                 iconSize.currentIndex = 2
                 sortMode.currentIndex = 1
                 showDividers.checked = false
