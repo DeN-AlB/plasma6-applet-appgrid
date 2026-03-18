@@ -486,53 +486,52 @@ Kirigami.ShadowedRectangle {
                 }
             }
 
-            // Edit mode help text
-            Rectangle {
-                anchors.bottom: editModeBtn.top
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottomMargin: Kirigami.Units.smallSpacing
-                z: 20
-                visible: appGrid.editMode
-                width: helpLabel.implicitWidth + Kirigami.Units.largeSpacing * 2
-                height: helpLabel.implicitHeight + Kirigami.Units.smallSpacing * 2
-                radius: Kirigami.Units.cornerRadius
-                color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
-                               Kirigami.Theme.backgroundColor.g,
-                               Kirigami.Theme.backgroundColor.b, 0.9)
-
-                PlasmaComponents.Label {
-                    id: helpLabel
-                    anchors.centerIn: parent
-                    text: appGrid.selectedSwapIndex < 0
-                          ? i18nd("dev.xarbit.appgrid", "Click an icon to select it, then click another to swap positions")
-                          : i18nd("dev.xarbit.appgrid", "Now click another icon to swap, or click again to deselect")
-                    font: Kirigami.Theme.smallFont
-                }
-            }
-
-            // Edit mode button — visible only in favorites tab
-            PlasmaComponents.ToolButton {
-                id: editModeBtn
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.margins: Kirigami.Units.smallSpacing
-                z: 20
-                visible: categoryBar.favoritesActive
-                icon.name: appGrid.editMode ? "dialog-ok-apply" : "document-edit"
-                checked: appGrid.editMode
-                onClicked: {
-                    appGrid.editMode = !appGrid.editMode
-                    appGrid.selectedSwapIndex = -1
-                    if (!appGrid.editMode)
-                        appGrid.favoritesOrderChanged()
-                }
-
-                PlasmaComponents.ToolTip.text: appGrid.editMode ? i18nd("dev.xarbit.appgrid", "Done") : i18nd("dev.xarbit.appgrid", "Reorder favorites")
-                PlasmaComponents.ToolTip.visible: hovered
-                PlasmaComponents.ToolTip.delay: Kirigami.Units.toolTipDelay
-            }
-
         }
+    }
+
+    // -- Edit mode overlay (on top of everything) --
+    Rectangle {
+        anchors.bottom: editModeBtn.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: Kirigami.Units.smallSpacing
+        z: 100
+        visible: appGrid.editMode
+        width: helpLabel.implicitWidth + Kirigami.Units.largeSpacing * 2
+        height: helpLabel.implicitHeight + Kirigami.Units.smallSpacing * 2
+        radius: Kirigami.Units.cornerRadius
+        color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
+                       Kirigami.Theme.backgroundColor.g,
+                       Kirigami.Theme.backgroundColor.b, 0.9)
+
+        PlasmaComponents.Label {
+            id: helpLabel
+            anchors.centerIn: parent
+            text: appGrid.selectedSwapIndex < 0
+                  ? i18nd("dev.xarbit.appgrid", "Click an icon to select it, then click another to swap positions")
+                  : i18nd("dev.xarbit.appgrid", "Now click another icon to swap, or click again to deselect")
+            font: Kirigami.Theme.smallFont
+        }
+    }
+
+    PlasmaComponents.ToolButton {
+        id: editModeBtn
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: Kirigami.Units.largeSpacing
+        z: 100
+        visible: categoryBar.favoritesActive && !panel.isSearching
+        icon.name: appGrid.editMode ? "dialog-ok-apply" : "document-edit"
+        checked: appGrid.editMode
+        onClicked: {
+            appGrid.editMode = !appGrid.editMode
+            appGrid.selectedSwapIndex = -1
+            if (!appGrid.editMode)
+                appGrid.favoritesOrderChanged()
+        }
+
+        PlasmaComponents.ToolTip.text: appGrid.editMode ? i18nd("dev.xarbit.appgrid", "Done") : i18nd("dev.xarbit.appgrid", "Reorder favorites")
+        PlasmaComponents.ToolTip.visible: hovered
+        PlasmaComponents.ToolTip.delay: Kirigami.Units.toolTipDelay
     }
 
     // -----------------------------------------------------------------------
