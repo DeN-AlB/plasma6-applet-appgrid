@@ -173,20 +173,16 @@ KCMUtils.SimpleKCM {
             model: [i18nd("dev.xarbit.appgrid", "Small"), i18nd("dev.xarbit.appgrid", "Medium"), i18nd("dev.xarbit.appgrid", "Large")]
         }
 
-        RowLayout {
+        QQC2.ComboBox {
+            id: sortMode
             Kirigami.FormData.label: i18nd("dev.xarbit.appgrid", "Sort order:")
-            spacing: Kirigami.Units.largeSpacing
+            model: [i18nd("dev.xarbit.appgrid", "Alphabetical"), i18nd("dev.xarbit.appgrid", "Most Used")]
+        }
 
-            QQC2.ComboBox {
-                id: sortMode
-                model: [i18nd("dev.xarbit.appgrid", "Alphabetical"), i18nd("dev.xarbit.appgrid", "Most Used")]
-            }
-
-            QQC2.CheckBox {
-                id: showRecentApps
-                text: i18nd("dev.xarbit.appgrid", "Show recently used applications")
-                enabled: sortMode.currentIndex === 0
-            }
+        QQC2.CheckBox {
+            id: showRecentApps
+            text: i18nd("dev.xarbit.appgrid", "Show recently used applications")
+            enabled: sortMode.currentIndex === 0 || startWithFavorites.checked
         }
 
         // --- Appearance ---

@@ -446,6 +446,8 @@ Kirigami.ShadowedRectangle {
                     iconSize: panel.gridIconSize
                     searchField: searchBar.field
                     showRecentApps: Plasmoid.configuration.showRecentApps !== false
+                    startWithFavorites: Plasmoid.configuration.startWithFavorites || false
+                    favoritesActive: categoryBar.favoritesActive
                     shuffleOverlayParent: shuffleOverlay
                     onOriginYChanged: {
                         if (panel._needsScrollToTop) {

@@ -154,15 +154,37 @@ GridView {
     property Item searchField: null
     // The apps model for section queries
     property var appsModel: null
-    // Config toggle for recent apps
+    // Config toggles
     property bool showRecentApps: true
-    // Whether we're showing "All" (recents visible)
-    // Hidden when sorting by most-used since frequent apps are already at the top.
-    readonly property bool showRecents: showRecentApps
-                                        && appsModel && !appsModel.filterCategory
-                                        && !appsModel.searchText
-                                        && appsModel.recentApps.length > 0
-                                        && appsModel.sortMode === 0
+    property bool startWithFavorites: false
+    property bool favoritesActive: false
+
+    // Show recently used apps in the grid header.
+    //
+    // When startWithFavorites is ON:
+    //   → show recents in the Favorites tab (any sort order)
+    //   → hide in All (recents belong with favorites)
+    //
+    // When startWithFavorites is OFF:
+    //   → show recents in All with Alphabetical sort
+    //   → disabled when Most Used (frequent apps already at the top)
+    //   → hide in Favorites (user navigated there manually)
+    //
+    // Never show during search or when a category filter is active.
+    readonly property bool showRecents: {
+        if (!showRecentApps || !appsModel || appsModel.searchText
+            || appsModel.filterCategory || appsModel.recentApps.length === 0)
+            return false
+
+        if (startWithFavorites)
+            return favoritesActive
+
+        // Most Used without startWithFavorites → recents disabled
+        if (appsModel.sortMode !== 0)
+            return false
+
+        return !favoritesActive
+    }
 
     // Keyboard navigation index for recent items in header (-1 = not in recents)
     property int recentIndex: -1
@@ -262,7 +284,11 @@ GridView {
         iconSize: gridView.iconSize
         currentRecentIndex: gridView.recentIndex
         gridHasFocus: gridView.activeFocus
+        favoritesActive: gridView.favoritesActive
         onRecentLaunched: function(storageId) { gridView.recentLaunched(storageId) }
+        onContextMenuRequested: function(storageId, desktopFile) {
+            gridView.contextMenuRequested(-1, storageId, desktopFile)
+        }
 
         Connections {
             target: gridView

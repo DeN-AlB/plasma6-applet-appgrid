@@ -19,8 +19,10 @@ Column {
     property real iconSize: Kirigami.Units.iconSizes.huge
     property int currentRecentIndex: -1
     property bool gridHasFocus: false
+    property bool favoritesActive: false
 
     signal recentLaunched(string storageId)
+    signal contextMenuRequested(string storageId, string desktopFile)
     signal shakeAll()
 
     spacing: Kirigami.Units.smallSpacing
@@ -68,7 +70,12 @@ Column {
                     appIcon: recentDelegate.appData.iconName || "application-x-executable"
                     isCurrentItem: recentHeader.currentRecentIndex === recentDelegate.index
                     iconSize: recentHeader.iconSize
-                    onClicked: recentHeader.recentLaunched(recentDelegate.modelData)
+                    onClicked: function(mouse) {
+                        if (mouse.button === Qt.RightButton)
+                            recentHeader.contextMenuRequested(recentDelegate.modelData, recentDelegate.appData.desktopFile || "")
+                        else
+                            recentHeader.recentLaunched(recentDelegate.modelData)
+                    }
                 }
 
                 Connections {
@@ -86,7 +93,9 @@ Column {
 
     PlasmaComponents.Label {
         leftPadding: Kirigami.Units.largeSpacing
-        text: i18nd("dev.xarbit.appgrid", "All Apps")
+        text: recentHeader.favoritesActive
+              ? i18nd("dev.xarbit.appgrid", "Favorites")
+              : i18nd("dev.xarbit.appgrid", "All Apps")
         font.bold: true
         opacity: 0.7
     }
