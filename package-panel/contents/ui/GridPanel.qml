@@ -106,7 +106,7 @@ Kirigami.ShadowedRectangle {
                             0.15)
 
     shadow.size: nativePopup ? 0 : Kirigami.Units.gridUnit
-    shadow.color: nativePopup ? "transparent" : Qt.rgba(0, 0, 0, 0.3)
+    shadow.color: nativePopup ? "transparent" : Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.3)
     shadow.xOffset: 0
     shadow.yOffset: nativePopup ? 0 : Kirigami.Units.smallSpacing
 
@@ -360,13 +360,10 @@ Kirigami.ShadowedRectangle {
         }
 
         // -- Category bar --
-        Rectangle {
+        Kirigami.Separator {
             Layout.fillWidth: true
-            implicitHeight: 1
-            color: Plasmoid.configuration.showDividers !== false
-                   ? Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.15)
-                   : "transparent"
             visible: panel.showCatBar
+            opacity: Plasmoid.configuration.showDividers !== false ? 1 : 0
         }
 
         CategoryBar {
@@ -388,13 +385,10 @@ Kirigami.ShadowedRectangle {
             onCategorySelected: searchBar.field.forceActiveFocus()
         }
 
-        Rectangle {
+        Kirigami.Separator {
             Layout.fillWidth: true
-            implicitHeight: 1
-            color: Plasmoid.configuration.showDividers !== false
-                   ? Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.15)
-                   : "transparent"
             visible: panel.showCatBar
+            opacity: Plasmoid.configuration.showDividers !== false ? 1 : 0
         }
 
         // -- Prefix mode view --

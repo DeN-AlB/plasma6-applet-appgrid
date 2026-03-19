@@ -88,12 +88,10 @@ ListView {
         width: listView.width
 
         // Section divider between app results and runner results
-        Rectangle {
+        Kirigami.Separator {
             width: parent.width
-            height: model.isSectionBoundary ? 1 : 0
-            color: Plasmoid.configuration.showDividers !== false
-                   ? Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.15)
-                   : "transparent"
+            visible: model.isSectionBoundary
+            opacity: Plasmoid.configuration.showDividers !== false ? 1 : 0
         }
 
         PlasmaComponents.ItemDelegate {

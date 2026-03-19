@@ -136,15 +136,12 @@ Item {
                 }
 
                 // Bottom separator (commands only)
-                Rectangle {
+                Kirigami.Separator {
                     visible: !modelData.section
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: 1
-                    color: Qt.rgba(Kirigami.Theme.textColor.r,
-                                   Kirigami.Theme.textColor.g,
-                                   Kirigami.Theme.textColor.b, 0.06)
+                    opacity: 0.3
                 }
             }
         }
@@ -257,14 +254,11 @@ Item {
                     }
                 }
 
-                Rectangle {
+                Kirigami.Separator {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: 1
-                    color: Qt.rgba(Kirigami.Theme.textColor.r,
-                                   Kirigami.Theme.textColor.g,
-                                   Kirigami.Theme.textColor.b, 0.06)
+                    opacity: 0.3
                 }
             }
         }

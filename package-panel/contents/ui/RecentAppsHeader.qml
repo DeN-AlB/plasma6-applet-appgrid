@@ -79,12 +79,9 @@ Column {
         }
     }
 
-    Rectangle {
+    Kirigami.Separator {
         width: parent.width
-        implicitHeight: 1
-        color: Qt.rgba(Kirigami.Theme.textColor.r,
-                       Kirigami.Theme.textColor.g,
-                       Kirigami.Theme.textColor.b, 0.15)
+        opacity: Plasmoid.configuration.showDividers !== false ? 1 : 0
     }
 
     PlasmaComponents.Label {

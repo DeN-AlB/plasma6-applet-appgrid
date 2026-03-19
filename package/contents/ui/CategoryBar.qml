@@ -191,6 +191,8 @@ RowLayout {
         id: allButton
         text: categoryBar.mnemonicText(i18nd("dev.xarbit.appgrid", "All"))
         font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.1
+        leftPadding: Kirigami.Units.largeSpacing
+        rightPadding: Kirigami.Units.largeSpacing
         checked: !categoryBar.favoritesActive
                  && (!categoryBar.appsModel || categoryBar.appsModel.filterCategory === "")
         onClicked: {
