@@ -232,7 +232,14 @@ GridView {
         else if (recentIndex < 0)
             moveCurrentIndexRight()
     }
+    // Consume Tab to prevent it from reaching the focus chain or search bar
+    Keys.onTabPressed: function(event) { event.accepted = true }
+    Keys.onBacktabPressed: function(event) { event.accepted = true }
+
     Keys.onPressed: function(event) {
+        // Redirect typing to search bar, but not Tab or special keys
+        if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab)
+            return
         if (event.text.length > 0 && !event.modifiers && searchField) {
             searchField.forceActiveFocus()
             searchField.text += event.text
