@@ -123,6 +123,7 @@ RowLayout {
     // -- Category action helpers --
 
     function closeCategoryMenu() { catContextMenu.close() }
+    function resetScroll() { catFlick.contentX = 0 }
 
     function selectAll() {
         if (categoryBar.favoritesActive)

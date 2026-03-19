@@ -184,6 +184,7 @@ Kirigami.ShadowedRectangle {
     function resetState() {
         contextMenu.close()
         categoryBar.closeCategoryMenu()
+        categoryBar.resetScroll()
         powerButtons.closeMenus()
         searchBar.text = ""
 
