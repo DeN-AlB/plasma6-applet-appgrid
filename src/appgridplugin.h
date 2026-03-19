@@ -176,6 +176,11 @@ public:
     /** Add an application shortcut to the desktop by its @p desktopFile path. */
     Q_INVOKABLE void addToDesktop(const QString &desktopFile);
 
+    // --- System info ---
+
+    /** Returns system/environment info for issue reporting. */
+    Q_INVOKABLE QVariantMap systemInfo();
+
 protected:
     bool m_useNativeActivation = false;
 

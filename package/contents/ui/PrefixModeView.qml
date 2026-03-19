@@ -51,6 +51,7 @@ Item {
                 { prefix: ":",  icon: "system-run",         title: i18nd("dev.xarbit.appgrid", "Run Command"), example: ":xdg-open ." },
                 { prefix: "/",  icon: "folder-open",        title: i18nd("dev.xarbit.appgrid", "Browse Files"), example: "/usr/bin" },
                 { prefix: "~/", icon: "folder-home",        title: i18nd("dev.xarbit.appgrid", "Browse Home"), example: "~/Documents" },
+                { prefix: "i:",  icon: "documentinfo",        title: i18nd("dev.xarbit.appgrid", "System Info"), example: "i:" },
                 { prefix: "?",  icon: "help-hint",          title: i18nd("dev.xarbit.appgrid", "This Help"), example: "" }
             ]
 
@@ -170,6 +171,122 @@ Item {
             font.family: "monospace"
             font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.2
             opacity: 0.9
+        }
+    }
+
+    // -- System info --
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: Kirigami.Units.largeSpacing * 2
+        visible: prefixView.mode === "info"
+        spacing: 0
+
+        property var sysInfo: prefixView.mode === "info" ? Plasmoid.systemInfo() : ({})
+
+        PlasmaComponents.Label {
+            text: i18nd("dev.xarbit.appgrid", "System Information")
+            font.bold: true
+            font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.3
+            Layout.bottomMargin: Kirigami.Units.largeSpacing * 2
+        }
+
+        Repeater {
+            model: [
+                { label: "AppGrid",  value: parent.sysInfo.appgridVersion || "" },
+                { label: "Variant",  value: parent.sysInfo.variant || "" },
+                { label: "Session",  value: parent.sysInfo.sessionType || "" },
+                { label: "Plasma",   value: parent.sysInfo.plasmaVersion || "" },
+                { label: "KF",       value: parent.sysInfo.kfVersion || "" },
+                { label: "Qt",       value: parent.sysInfo.qtVersion || "" },
+                { label: "OS",       value: parent.sysInfo.os || "" },
+                { label: "Screens",  value: parent.sysInfo.screens || "" }
+            ]
+
+            delegate: Item {
+                Layout.fillWidth: true
+                implicitHeight: infoRow.implicitHeight + Kirigami.Units.largeSpacing * 2
+
+                RowLayout {
+                    id: infoRow
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                    }
+                    spacing: Kirigami.Units.largeSpacing
+
+                    PlasmaComponents.Label {
+                        text: modelData.label
+                        font.bold: true
+                        opacity: 0.6
+                        Layout.preferredWidth: Kirigami.Units.gridUnit * 5
+                    }
+
+                    PlasmaComponents.Label {
+                        text: modelData.value
+                        font.family: "monospace"
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                    }
+                }
+
+                Rectangle {
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 1
+                    color: Qt.rgba(Kirigami.Theme.textColor.r,
+                                   Kirigami.Theme.textColor.g,
+                                   Kirigami.Theme.textColor.b, 0.06)
+                }
+            }
+        }
+
+        Item { Layout.fillHeight: true }
+
+        PlasmaComponents.Button {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: Kirigami.Units.largeSpacing
+            icon.name: copyTimer.running ? "dialog-ok-apply" : "edit-copy"
+            text: copyTimer.running
+                ? i18nd("dev.xarbit.appgrid", "Copied!")
+                : i18nd("dev.xarbit.appgrid", "Copy to Clipboard")
+            onClicked: {
+                var info = parent.sysInfo
+                var lines = [
+                    "AppGrid: " + (info.appgridVersion || ""),
+                    "Variant: " + (info.variant || ""),
+                    "Session: " + (info.sessionType || ""),
+                    "Plasma: " + (info.plasmaVersion || ""),
+                    "KF: " + (info.kfVersion || ""),
+                    "Qt: " + (info.qtVersion || ""),
+                    "OS: " + (info.os || ""),
+                    "Screens: " + (info.screens || "")
+                ]
+                infoClipboard.text = lines.join("\n")
+                infoClipboard.selectAll()
+                infoClipboard.copy()
+                copyTimer.start()
+            }
+
+            Timer {
+                id: copyTimer
+                interval: 2000
+            }
+
+            TextEdit {
+                id: infoClipboard
+                visible: false
+            }
+        }
+
+        PlasmaComponents.Label {
+            Layout.fillWidth: true
+            Layout.topMargin: Kirigami.Units.smallSpacing
+            text: i18nd("dev.xarbit.appgrid", "Include this info when reporting issues on GitHub")
+            font: Kirigami.Theme.smallFont
+            opacity: 0.35
+            horizontalAlignment: Text.AlignHCenter
         }
     }
 

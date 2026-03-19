@@ -13,7 +13,9 @@
 #include <KWindowEffects>
 #include <KWindowSystem>
 #include <KX11Extras>
+#include <kcoreaddons_version.h>
 #include <LayerShellQt/window.h>
+#include <plasma_version.h>
 #include <Plasma/Containment>
 #include <Plasma/Corona>
 #include <PlasmaQuick/AppletQuickItem>
@@ -473,6 +475,51 @@ void AppGridPlugin::addToDesktop(const QString &desktopFile)
         desktop->createApplet(QStringLiteral("org.kde.plasma.icon"),
                               QVariantList() << QUrl::fromLocalFile(absPath));
     }
+}
+
+// --- System info ---
+
+QVariantMap AppGridPlugin::systemInfo()
+{
+    QVariantMap info;
+    info[QStringLiteral("appgridVersion")] = pluginMetaData().version();
+    info[QStringLiteral("plasmaVersion")] = QStringLiteral(PLASMA_VERSION_STRING);
+    info[QStringLiteral("kfVersion")] = QStringLiteral(KCOREADDONS_VERSION_STRING);
+    info[QStringLiteral("qtVersion")] = QString::fromLatin1(qVersion());
+    info[QStringLiteral("sessionType")] = KWindowSystem::isPlatformWayland()
+        ? QStringLiteral("Wayland") : QStringLiteral("X11");
+    info[QStringLiteral("variant")] = m_useNativeActivation
+        ? QStringLiteral("Panel") : QStringLiteral("Center");
+
+    // OS info from /etc/os-release
+    QFile osRelease(QStringLiteral("/etc/os-release"));
+    if (osRelease.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&osRelease);
+        while (!in.atEnd()) {
+            const auto line = in.readLine();
+            if (line.startsWith(QLatin1String("PRETTY_NAME="))) {
+                auto val = line.mid(12);
+                if (val.startsWith('"') && val.endsWith('"'))
+                    val = val.mid(1, val.length() - 2);
+                info[QStringLiteral("os")] = val;
+                break;
+            }
+        }
+    }
+
+    // Screen info
+    const auto screens = QGuiApplication::screens();
+    QStringList screenList;
+    for (auto *screen : screens) {
+        auto geo = screen->geometry();
+        screenList.append(QStringLiteral("%1 (%2x%3 @ %4x)")
+            .arg(screen->name())
+            .arg(geo.width()).arg(geo.height())
+            .arg(screen->devicePixelRatio()));
+    }
+    info[QStringLiteral("screens")] = screenList.join(QStringLiteral(", "));
+
+    return info;
 }
 
 QVariantMap UnifiedSearchModel::get(int row) const

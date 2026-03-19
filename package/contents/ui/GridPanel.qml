@@ -44,6 +44,7 @@ Kirigami.ShadowedRectangle {
     readonly property string prefixMode: {
         var t = searchBar.text
         if (t.startsWith("t:")) return "terminal"
+        if (t.startsWith("i:")) return "info"
         if (t.startsWith("?")) return "help"
         if (t.startsWith("/") || t.startsWith("~/")) return "files"
         if (t.startsWith(":")) return "command"
