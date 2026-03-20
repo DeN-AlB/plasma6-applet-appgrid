@@ -55,6 +55,7 @@ Item {
     }
 
     function playAnimation() {
+        if (Kirigami.Units.longDuration === 0) return
         if (hoverAnimation === 5) {
             shuffleRequested()
         } else if (iconAnimLoader.item) {

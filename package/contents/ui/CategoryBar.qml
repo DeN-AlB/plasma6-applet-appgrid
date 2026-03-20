@@ -270,6 +270,7 @@ RowLayout {
         }
 
         Behavior on contentX {
+            enabled: Kirigami.Units.longDuration > 0
             SmoothedAnimation { velocity: 800 }
         }
 

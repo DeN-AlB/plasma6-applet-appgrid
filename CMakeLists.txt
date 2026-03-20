@@ -63,6 +63,13 @@ set(SHARED_PREFIX_QML_FILES
     prefix/PrefixFileBrowser.qml
 )
 
+set(SHARED_ICONANIM_QML_FILES
+    iconanims/ShakeAnim.qml
+    iconanims/GrowAnim.qml
+    iconanims/BounceAnim.qml
+    iconanims/SpinAnim.qml
+)
+
 # --- Main plasmoid (custom Window: fullscreen/centered) ---
 
 add_library(dev.xarbit.appgrid SHARED
@@ -127,6 +134,14 @@ foreach(qml_file ${SHARED_QML_FILES})
 endforeach()
 
 foreach(qml_file ${SHARED_PREFIX_QML_FILES})
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/package/contents/ui/${qml_file}
+        ${CMAKE_CURRENT_SOURCE_DIR}/package-panel/contents/ui/${qml_file}
+        COPYONLY
+    )
+endforeach()
+
+foreach(qml_file ${SHARED_ICONANIM_QML_FILES})
     configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/package/contents/ui/${qml_file}
         ${CMAKE_CURRENT_SOURCE_DIR}/package-panel/contents/ui/${qml_file}
