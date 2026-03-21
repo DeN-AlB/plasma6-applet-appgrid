@@ -14,7 +14,7 @@
     "Icon": "start-here-kde-symbolic",
     "Id": "dev.xarbit.appgrid",
     "License": "GPL-2.0-or-later",
-    "Name": "Application Launcher (AppGrid Center)",
+    "Name": "AppGrid Launcher Center",
     "Version": "@CMAKE_PROJECT_VERSION@",
     "Website": "https://github.com/xarbit/plasma6-applet-appgrid",
     "BugReportUrl": "https://github.com/xarbit/plasma6-applet-appgrid/issues"
