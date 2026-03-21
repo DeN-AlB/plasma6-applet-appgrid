@@ -508,6 +508,7 @@ Kirigami.ShadowedRectangle {
                     model: !panel.isSearching ? panel.appsModel : null
                     appsModel: panel.appsModel
                     columns: panel.columns
+                    adaptiveColumns: panel.nativePopup
                     iconSize: panel.gridIconSize
                     searchField: searchBar.field
                     showRecentApps: panel.cfgShowRecentApps

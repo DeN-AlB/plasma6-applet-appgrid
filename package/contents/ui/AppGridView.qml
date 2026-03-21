@@ -13,8 +13,12 @@ import org.kde.plasma.components as PlasmaComponents
 GridView {
     id: gridView
 
-    // Number of columns to display.
+    // Number of columns to display. If adaptiveColumns is true, computed from width.
     property int columns: 6
+    property bool adaptiveColumns: false
+    readonly property int effectiveColumns: adaptiveColumns
+        ? Math.max(3, Math.floor(width / (iconSize + Kirigami.Units.gridUnit * 2 + Kirigami.Units.smallSpacing * 2)))
+        : columns
 
     // Icon size from configuration (Kirigami pixel size).
     property real iconSize: Kirigami.Units.iconSizes.huge
@@ -133,7 +137,7 @@ GridView {
 
     clip: true
     cacheBuffer: Kirigami.Units.gridUnit * 4
-    cellWidth: Math.floor(width / columns)
+    cellWidth: Math.floor(width / effectiveColumns)
     cellHeight: iconSize
                + Kirigami.Units.gridUnit * 2
                + Kirigami.Units.smallSpacing * 2
@@ -214,7 +218,7 @@ GridView {
     Keys.onUpPressed: {
         if (recentIndex >= 0) {
             // Move up within recents row — go to row above if possible
-            var newIdx = recentIndex - columns
+            var newIdx = recentIndex - effectiveColumns
             if (newIdx >= 0) {
                 recentIndex = newIdx
             } else {
@@ -223,10 +227,10 @@ GridView {
                 currentIndex = -1
                 if (searchField) searchField.forceActiveFocus()
             }
-        } else if (currentIndex >= 0 && currentIndex < columns && showRecents) {
+        } else if (currentIndex >= 0 && currentIndex < effectiveColumns && showRecents) {
             // At top row of grid, move into recents
-            var lastRow = Math.floor((recentCount - 1) / columns)
-            recentIndex = Math.min(currentIndex + lastRow * columns, recentCount - 1)
+            var lastRow = Math.floor((recentCount - 1) / effectiveColumns)
+            recentIndex = Math.min(currentIndex + lastRow * effectiveColumns, recentCount - 1)
             currentIndex = -1
         } else {
             moveCurrentIndexUp()
@@ -234,12 +238,12 @@ GridView {
     }
     Keys.onDownPressed: {
         if (recentIndex >= 0) {
-            var newIdx = recentIndex + columns
+            var newIdx = recentIndex + effectiveColumns
             if (newIdx < recentCount) {
                 recentIndex = newIdx
             } else {
                 // Move from recents into grid
-                currentIndex = Math.min(recentIndex % columns, count - 1)
+                currentIndex = Math.min(recentIndex % effectiveColumns, count - 1)
                 recentIndex = -1
             }
         } else {
