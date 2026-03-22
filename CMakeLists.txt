@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 cmake_minimum_required(VERSION 3.20)
-project(AppGrid VERSION 1.7.3 LANGUAGES CXX)
+project(AppGrid VERSION 1.7.4 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -21,7 +21,8 @@ find_package(KF6KIO REQUIRED)
 find_package(KF6WindowSystem REQUIRED)
 find_package(KF6Package REQUIRED)
 find_package(LayerShellQt REQUIRED)
-find_package(LibKWorkspace REQUIRED)
+# LibKWorkspace no longer required — session actions use Kicker.SystemModel
+# find_package(LibKWorkspace REQUIRED)
 find_package(KF6Runner REQUIRED)
 find_package(Plasma REQUIRED)
 find_package(PlasmaQuick REQUIRED)
@@ -37,7 +38,6 @@ set(APPGRID_COMMON_LIBS
     KF6::KIOGui
     KF6::WindowSystem
     LayerShellQt::Interface
-    PW::KWorkspace
     Plasma::PlasmaQuick
     KF6::Runner
 )
