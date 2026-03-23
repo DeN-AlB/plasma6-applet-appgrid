@@ -1,5 +1,6 @@
 # IDE / tools
 .claude/
+notes/
 
 # Build artifacts
 build/
