@@ -112,7 +112,11 @@ void AppFilterModel::setFavoriteApps(const QStringList &list)
         return;
     m_favoriteApps = list;
     if (m_showFavoritesOnly)
-        APPGRID_INVALIDATE_FILTER();
+        // Use invalidate() instead of APPGRID_INVALIDATE_FILTER() because
+        // favorites mode uses a custom sort order (lessThan sorts by position
+        // in m_favoriteApps). A filter-only refresh would keep stale sort
+        // results, causing icons to appear in the wrong order.
+        invalidate();
     emit favoriteAppsChanged();
 }
 
@@ -223,7 +227,12 @@ void AppFilterModel::setShowFavoritesOnly(bool enabled)
     if (m_showFavoritesOnly == enabled)
         return;
     m_showFavoritesOnly = enabled;
-    APPGRID_INVALIDATE_FILTER();
+    // Use invalidate() instead of APPGRID_INVALIDATE_FILTER() because
+    // toggling favorites mode changes the sort order (lessThan sorts by
+    // m_favoriteApps position when enabled, alphabetical otherwise).
+    // A filter-only refresh would keep the previous sort, causing
+    // scrambled icon order on first open after login (#70).
+    invalidate();
     emit showFavoritesOnlyChanged();
 }
 
