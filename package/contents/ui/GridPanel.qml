@@ -36,6 +36,7 @@ Kirigami.ShadowedRectangle {
     readonly property bool cfgShowRecentApps: Plasmoid.configuration.showRecentApps !== false
     readonly property bool cfgShowDividers: Plasmoid.configuration.showDividers !== false
     readonly property bool cfgShowTooltips: Plasmoid.configuration.showTooltips !== false
+    readonly property bool cfgShowNewAppBadge: Plasmoid.configuration.showNewAppBadge !== false
     readonly property bool cfgShowScrollbars: Plasmoid.configuration.showScrollbars !== false
     readonly property int scrollBarPolicy: cfgShowScrollbars
                                            ? PlasmaComponents.ScrollBar.AsNeeded : PlasmaComponents.ScrollBar.AlwaysOff
@@ -491,6 +492,7 @@ Kirigami.ShadowedRectangle {
                 iconSize: panel.gridIconSize
                 showDividers: panel.cfgShowDividers
                 showTooltips: panel.cfgShowTooltips
+                showNewAppBadge: panel.cfgShowNewAppBadge
                 showRecents: panel.cfgShowRecentApps
                              && panel.appsModel
                              && panel.appsModel.recentApps.length > 0
@@ -533,6 +535,7 @@ Kirigami.ShadowedRectangle {
                     favoritesActive: panel.isFavoritesActive
                     showDividers: panel.cfgShowDividers
                     showTooltips: panel.cfgShowTooltips
+                showNewAppBadge: panel.cfgShowNewAppBadge
                     animateHighlight: (Plasmoid.configuration.hoverAnimation || 0) > 0
                     shuffleOverlayParent: shuffleOverlay
                     onOriginYChanged: {

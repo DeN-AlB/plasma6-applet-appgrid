@@ -24,6 +24,7 @@ Flickable {
     property bool showRecents: false
     property bool showDividers: true
     property bool showTooltips: true
+    property bool showNewAppBadge: true
     property Item searchField: null
 
     signal launched(int proxyIndex)
@@ -257,6 +258,8 @@ Flickable {
                                 showTooltip: categoryGrid.showTooltips
                                 iconSize: categoryGrid.iconSize
                                 isCurrentItem: categoryGrid.currentIndex === parent.flatIndex
+                                isNew: categoryGrid.showNewAppBadge && categoryGrid.appsModel
+                                    ? categoryGrid.appsModel.isNewApp(modelData.storageId || "") : false
                                 onClicked: function(mouse) {
                                     if (mouse.button === Qt.RightButton)
                                         categoryGrid.contextMenuRequested(modelData.proxyIndex, modelData.storageId || "", modelData.desktopFile || "")

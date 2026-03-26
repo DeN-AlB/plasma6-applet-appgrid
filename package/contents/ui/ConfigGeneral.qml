@@ -31,6 +31,7 @@ KCMUtils.SimpleKCM {
     property alias cfg_showDividers: showDividers.checked
     property alias cfg_showScrollbars: showScrollbars.checked
     property alias cfg_showTooltips: showTooltips.checked
+    property alias cfg_showNewAppBadge: showNewAppBadge.checked
     property alias cfg_backgroundOpacity: backgroundOpacity.value
     property alias cfg_openAnimation: openAnimation.currentIndex
     property alias cfg_enableBlur: enableBlur.checked
@@ -282,6 +283,11 @@ KCMUtils.SimpleKCM {
             text: i18nd("dev.xarbit.appgrid", "Show tooltips on hover")
         }
 
+        QQC2.CheckBox {
+            id: showNewAppBadge
+            text: i18nd("dev.xarbit.appgrid", "Show new app badge")
+        }
+
         QQC2.ComboBox {
             id: openAnimation
             Kirigami.FormData.label: i18nd("dev.xarbit.appgrid", "Open/close animation:")
@@ -390,6 +396,7 @@ KCMUtils.SimpleKCM {
                 showDividers.checked = true
                 showScrollbars.checked = false
                 showTooltips.checked = true
+                showNewAppBadge.checked = true
                 backgroundOpacity.value = 85
                 openAnimation.currentIndex = 2
                 enableBlur.checked = true

@@ -167,6 +167,7 @@ GridView {
     property bool favoritesActive: false
     property bool showDividers: true
     property bool showTooltips: true
+    property bool showNewAppBadge: true
 
     // Show recently used apps in the grid header.
     //
@@ -341,7 +342,7 @@ GridView {
             showTooltip: gridView.showTooltips
             isCurrentItem: gridView.currentIndex === model.index
             iconSize: gridView.iconSize
-            isNew: gridView.appsModel ? gridView.appsModel.isNewApp(model.storageId || "") : false
+            isNew: gridView.showNewAppBadge && gridView.appsModel ? gridView.appsModel.isNewApp(model.storageId || "") : false
             editMode: gridView.editMode
             isSelected: gridView.editMode && gridView.selectedSwapIndex === model.index
             onClicked: function(mouse) {

@@ -38,6 +38,10 @@
       <label>Whether to show tooltips on app icon hover.</label>
       <default>true</default>
     </entry>
+    <entry name="showNewAppBadge" type="Bool">
+      <label>Whether to show a green badge on newly installed apps.</label>
+      <default>true</default>
+    </entry>
     <entry name="showScrollbars" type="Bool">
       <label>Whether to show scrollbars in the grid and search views.</label>
       <default>false</default>

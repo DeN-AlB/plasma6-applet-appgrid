@@ -62,6 +62,10 @@
       <label>Whether to show tooltips on app icon hover.</label>
       <default>true</default>
     </entry>
+    <entry name="showNewAppBadge" type="Bool">
+      <label>Whether to show a green badge on newly installed apps.</label>
+      <default>true</default>
+    </entry>
     <entry name="shakeOnOpen" type="Bool">
       <label>Whether to shake all icons when the grid opens.</label>
       <default>true</default>
