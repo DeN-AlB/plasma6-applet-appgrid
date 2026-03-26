@@ -139,7 +139,7 @@ GridView {
     cacheBuffer: Kirigami.Units.gridUnit * 4
     cellWidth: Math.floor(width / effectiveColumns)
     cellHeight: iconSize
-               + Kirigami.Units.gridUnit * 2
+               + Kirigami.Units.gridUnit * 3
                + Kirigami.Units.smallSpacing * 2
     boundsBehavior: Flickable.StopAtBounds
     keyNavigationEnabled: true

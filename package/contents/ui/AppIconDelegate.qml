@@ -148,9 +148,11 @@ Item {
         visible: root.isSelected
     }
 
-    // Tooltip with app name, generic name, and install source
+    // Tooltip with app name, description, and install source
     readonly property string tooltipText: {
         var parts = []
+        if (root.appName)
+            parts.push(root.appName)
         if (root.appComment)
             parts.push(root.appComment)
         else if (root.appGenericName && root.appGenericName !== root.appName)

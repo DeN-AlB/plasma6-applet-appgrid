@@ -32,7 +32,7 @@ Window {
         return Kirigami.Units.iconSizes.huge
     }
     readonly property real estCellWidth: gridIconSize + Kirigami.Units.gridUnit * 2 + Kirigami.Units.smallSpacing * 2
-    readonly property real estCellHeight: gridIconSize + Kirigami.Units.gridUnit * 2 + Kirigami.Units.smallSpacing * 2
+    readonly property real estCellHeight: gridIconSize + Kirigami.Units.gridUnit * 3 + Kirigami.Units.smallSpacing * 2
     readonly property real estPanelWidth: estCellWidth * columns + Kirigami.Units.largeSpacing * 4
     readonly property real estPanelHeight: estCellHeight * rows + Kirigami.Units.largeSpacing * 4 + Kirigami.Units.gridUnit * 5
 

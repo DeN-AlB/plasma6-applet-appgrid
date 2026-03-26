@@ -487,8 +487,10 @@ Kirigami.ShadowedRectangle {
                 appsModel: panel.appsModel
                 groupedApps: panel.showCategoryGrid && panel.appsModel
                     ? panel.appsModel.groupedByCategory : []
-                cellWidth: appGrid.cellWidth
-                cellHeight: appGrid.cellHeight
+                cellWidth: Math.floor(categoryGridView.width / panel.columns)
+                cellHeight: panel.gridIconSize
+                            + Kirigami.Units.gridUnit * 3
+                            + Kirigami.Units.smallSpacing * 2
                 iconSize: panel.gridIconSize
                 showDividers: panel.cfgShowDividers
                 showTooltips: panel.cfgShowTooltips
