@@ -266,6 +266,15 @@ Flickable {
                                     else
                                         categoryGrid.launched(modelData.proxyIndex)
                                 }
+
+                                Connections {
+                                    target: categoryGrid.appsModel
+                                    function onKnownAppsChanged() {
+                                        catIconDelegate.isNew = categoryGrid.showNewAppBadge
+                                            && categoryGrid.appsModel
+                                            ? categoryGrid.appsModel.isNewApp(modelData.storageId || "") : false
+                                    }
+                                }
                             }
 
                             Connections {
